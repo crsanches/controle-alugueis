@@ -84,7 +84,9 @@ export default function IRPage() {
             </p>
           </div>
 
-          <table className="ledger-table">
+          <div className="table-scroll">
+
+            <table className="ledger-table">
             <thead>
               <tr>
                 <th>Inquilino</th>
@@ -105,7 +107,8 @@ export default function IRPage() {
                 </tr>
               ))}
             </tbody>
-          </table>
+            </table>
+          </div>
 
           {rows.length === 0 && (
             <p className="text-slate">Nenhum contrato ativo com recolhimento de IR no momento.</p>

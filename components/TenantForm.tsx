@@ -66,7 +66,7 @@ export function TenantForm({ tenant }: { tenant?: Tenant }) {
         <input className={inputClass} value={form.name} onChange={(e) => update('name', e.target.value)} required />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <label className={labelClass}>Telefone</label>
           <input

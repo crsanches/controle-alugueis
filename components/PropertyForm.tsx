@@ -89,7 +89,7 @@ export function PropertyForm({ property }: { property?: Property }) {
         <input className={inputClass} value={form.address} onChange={(e) => update('address', e.target.value)} />
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div>
           <label className={labelClass}>Código</label>
           <input className={inputClass} value={form.code} onChange={(e) => update('code', e.target.value)} />
@@ -113,7 +113,7 @@ export function PropertyForm({ property }: { property?: Property }) {
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <label className={labelClass}>Taxa condominial mensal (R$)</label>
           <input

@@ -197,7 +197,7 @@ function AlertSection({
   return (
     <section>
       <h2 className={`mb-3 font-mono text-xs uppercase tracking-widest ${accent}`}>{title}</h2>
-      {children}
+      <div className="table-scroll">{children}</div>
     </section>
   );
 }

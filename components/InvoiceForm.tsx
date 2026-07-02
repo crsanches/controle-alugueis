@@ -204,7 +204,7 @@ export function InvoiceForm({ invoice }: { invoice?: Invoice }) {
         )}
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <label className={labelClass}>Mês de referência</label>
           <input
@@ -228,7 +228,7 @@ export function InvoiceForm({ invoice }: { invoice?: Invoice }) {
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div>
           <label className={labelClass}>Aluguel (R$)</label>
           <input type="number" step="0.01" className={inputClass} value={form.rentAmount} onChange={(e) => update('rentAmount', e.target.value)} />
@@ -260,7 +260,7 @@ export function InvoiceForm({ invoice }: { invoice?: Invoice }) {
         <p className="font-display text-2xl money">{formatCurrency(totalAmount)}</p>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <label className={labelClass}>Status</label>
           <select

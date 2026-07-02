@@ -79,7 +79,7 @@ export default function HistoryPage() {
 
   return (
     <div>
-      <header className="mb-6 flex items-end justify-between">
+      <header className="mb-6 flex flex-wrap items-end justify-between gap-3">
         <div>
           <p className="font-mono text-xs uppercase tracking-widest text-slate">Histórico</p>
           <h1 className="font-display text-3xl">Observações e ocorrências</h1>
@@ -111,7 +111,8 @@ export default function HistoryPage() {
       {error && <p className="text-rust">{error}</p>}
 
       {!loading && !error && (
-        <table className="ledger-table">
+        <div className="table-scroll">
+          <table className="ledger-table">
           <thead>
             <tr>
               <th>Data</th>
@@ -142,7 +143,8 @@ export default function HistoryPage() {
               </tr>
             ))}
           </tbody>
-        </table>
+          </table>
+        </div>
       )}
 
       {!loading && !error && filtered.length === 0 && (

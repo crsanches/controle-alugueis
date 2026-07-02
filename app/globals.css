@@ -13,8 +13,12 @@
 }
 
 @layer components {
+  .table-scroll {
+    @apply -mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0;
+  }
+
   .ledger-table {
-    @apply w-full border-collapse text-sm;
+    @apply w-full min-w-[640px] border-collapse text-sm;
   }
 
   .ledger-table th {

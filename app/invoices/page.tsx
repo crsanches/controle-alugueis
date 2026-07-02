@@ -50,14 +50,14 @@ export default function InvoicesPage() {
 
   return (
     <div>
-      <header className="mb-6 flex items-end justify-between">
+      <header className="mb-6 flex flex-wrap items-end justify-between gap-3">
         <div>
           <p className="font-mono text-xs uppercase tracking-widest text-slate">Boletos</p>
           <h1 className="font-display text-3xl">Cobranças mensais</h1>
         </div>
 
-        <div className="flex items-center gap-3">
-          <div className="flex gap-1">
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-wrap gap-1">
             {filters.map((f) => (
               <button
                 key={f.key}
@@ -82,44 +82,46 @@ export default function InvoicesPage() {
       {error && <p className="text-rust">{error}</p>}
 
       {!loading && !error && (
-        <table className="ledger-table">
-          <thead>
-            <tr>
-              <th>Referência</th>
-              <th>Inquilino</th>
-              <th>Imóvel</th>
-              <th>Vencimento</th>
-              <th>Valor total</th>
-              <th>Status</th>
-              <th>Recibo</th>
-              <th>WhatsApp</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.map((inv) => (
-              <tr key={inv.id}>
-                <td className="capitalize">
-                  <Link href={`/invoices/${inv.id}/edit`} className="hover:text-terracotta">
-                    {formatMonth(inv.referenceMonth)}
-                  </Link>
-                </td>
-                <td>{inv.tenantName}</td>
-                <td>{inv.propertyName}</td>
-                <td className="money">{formatDate(inv.dueDate)}</td>
-                <td className="money">{formatCurrency(inv.totalAmount)}</td>
-                <td>
-                  <StatusBadge status={getEffectiveInvoiceStatus(inv)} />
-                </td>
-                <td>
-                  <GenerateReceiptButton invoice={inv} compact />
-                </td>
-                <td>
-                  <SendWhatsAppButton invoice={inv} compact />
-                </td>
+        <div className="table-scroll">
+          <table className="ledger-table">
+            <thead>
+              <tr>
+                <th>Referência</th>
+                <th>Inquilino</th>
+                <th>Imóvel</th>
+                <th>Vencimento</th>
+                <th>Valor total</th>
+                <th>Status</th>
+                <th>Recibo</th>
+                <th>WhatsApp</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filtered.map((inv) => (
+                <tr key={inv.id}>
+                  <td className="capitalize">
+                    <Link href={`/invoices/${inv.id}/edit`} className="hover:text-terracotta">
+                      {formatMonth(inv.referenceMonth)}
+                    </Link>
+                  </td>
+                  <td>{inv.tenantName}</td>
+                  <td>{inv.propertyName}</td>
+                  <td className="money">{formatDate(inv.dueDate)}</td>
+                  <td className="money">{formatCurrency(inv.totalAmount)}</td>
+                  <td>
+                    <StatusBadge status={getEffectiveInvoiceStatus(inv)} />
+                  </td>
+                  <td>
+                    <GenerateReceiptButton invoice={inv} compact />
+                  </td>
+                  <td>
+                    <SendWhatsAppButton invoice={inv} compact />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
 
       {!loading && !error && filtered.length === 0 && (

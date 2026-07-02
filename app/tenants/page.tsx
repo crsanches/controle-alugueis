@@ -31,7 +31,7 @@ export default function TenantsPage() {
 
   return (
     <div>
-      <header className="mb-8 flex items-end justify-between">
+      <header className="mb-8 flex flex-wrap items-end justify-between gap-3">
         <div>
           <p className="font-mono text-xs uppercase tracking-widest text-slate">Inquilinos</p>
           <h1 className="font-display text-3xl">Inquilinos cadastrados</h1>
@@ -45,7 +45,8 @@ export default function TenantsPage() {
       {error && <p className="text-rust">{error}</p>}
 
       {!loading && !error && (
-        <table className="ledger-table">
+        <div className="table-scroll">
+          <table className="ledger-table">
           <thead>
             <tr>
               <th>Nome</th>
@@ -72,7 +73,8 @@ export default function TenantsPage() {
               </tr>
             ))}
           </tbody>
-        </table>
+          </table>
+        </div>
       )}
 
       {!loading && !error && tenants.length === 0 && (

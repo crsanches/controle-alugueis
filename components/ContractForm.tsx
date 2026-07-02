@@ -131,7 +131,7 @@ export function ContractForm({ contract }: { contract?: Contract }) {
 
   return (
     <form onSubmit={handleSubmit} className="max-w-2xl space-y-5">
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <label className={labelClass}>Inquilino</label>
           <select className={inputClass} value={form.tenantId} onChange={(e) => update('tenantId', e.target.value)} required>
@@ -156,7 +156,7 @@ export function ContractForm({ contract }: { contract?: Contract }) {
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div>
           <label className={labelClass}>Início do contrato</label>
           <input type="date" className={inputClass} value={form.startDate} onChange={(e) => update('startDate', e.target.value)} required />
@@ -179,7 +179,7 @@ export function ContractForm({ contract }: { contract?: Contract }) {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <label className={labelClass}>Valor original do contrato (R$)</label>
           <input
@@ -202,7 +202,7 @@ export function ContractForm({ contract }: { contract?: Contract }) {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <label className={labelClass}>Índice de reajuste</label>
           <select className={inputClass} value={form.adjustmentType} onChange={(e) => update('adjustmentType', e.target.value)}>
