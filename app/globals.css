@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-paper text-ink;
+  }
+
+  ::selection {
+    @apply bg-terracotta/20;
+  }
+}
+
+@layer components {
+  .ledger-table {
+    @apply w-full border-collapse text-sm;
+  }
+
+  .ledger-table th {
+    @apply border-b border-hairline pb-2 text-left font-sans text-xs uppercase tracking-wide text-slate;
+  }
+
+  .ledger-table td {
+    @apply border-b border-hairline/70 py-3 align-middle;
+  }
+
+  .ledger-table tr:hover td {
+    @apply bg-paperDim/70;
+  }
+
+  .money {
+    @apply font-mono tabular-nums;
+  }
+}
