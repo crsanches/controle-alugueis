@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { addDoc, collection, deleteDoc, doc, getDocs, orderBy, query, updateDoc } from 'firebase/firestore';
+import { addDoc, collection, deleteDoc, doc, getDocs, orderBy, query, updateDoc, where } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import type { Contract, Property, Tenant } from '@/lib/types';
-import { timestampToDateInput, dateInputToTimestamp, formatDate } from '@/lib/format';
+import type { Contract, HistoryEntry, Property, Tenant } from '@/lib/types';
+import { timestampToDateInput, dateInputToTimestamp, formatDate, formatCurrency } from '@/lib/format';
 import { inputClass, labelClass, primaryButtonClass, secondaryButtonClass, dangerLinkClass } from '@/lib/formStyles';
+import { CurrencyInput } from '@/components/CurrencyInput';
 
 export function ContractForm({ contract }: { contract?: Contract }) {
   const router = useRouter();
@@ -33,6 +34,60 @@ export function ContractForm({ contract }: { contract?: Contract }) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // reajustes adicionados nesta sessão de edição, ainda não salvos
+  const [pendingAdjustments, setPendingAdjustments] = useState<{ date: string; value: string }[]>([]);
+  const [newAdjustmentDate, setNewAdjustmentDate] = useState(new Date().toISOString().slice(0, 10));
+  const [newAdjustmentValue, setNewAdjustmentValue] = useState('0');
+
+  const existingAdjustments = contract?.adjustmentHistory ?? [];
+
+  function handleAddAdjustment() {
+    const value = parseFloat(newAdjustmentValue) || 0;
+    if (!newAdjustmentDate || value <= 0) return;
+
+    setPendingAdjustments((list) => [...list, { date: newAdjustmentDate, value: newAdjustmentValue }]);
+
+    // se esse for o reajuste mais recente até agora, já atualiza o valor
+    // atual do aluguel automaticamente (dá pra ajustar na mão depois)
+    const allDates = [
+      ...existingAdjustments.map((a) => a.date?.toDate().getTime() ?? 0),
+      ...pendingAdjustments.map((a) => new Date(a.date).getTime()),
+    ];
+    const newDateMs = new Date(newAdjustmentDate).getTime();
+    if (allDates.length === 0 || newDateMs >= Math.max(...allDates)) {
+      update('currentRentValue', newAdjustmentValue);
+    }
+
+    setNewAdjustmentDate(new Date().toISOString().slice(0, 10));
+    setNewAdjustmentValue('0');
+  }
+
+  function handleRemovePendingAdjustment(index: number) {
+    setPendingAdjustments((list) => list.filter((_, i) => i !== index));
+  }
+
+  // --- renovação (sempre por 30 meses) ---
+  const [renewalHistory, setRenewalHistory] = useState<HistoryEntry[]>([]);
+  const [renewalDateOverride, setRenewalDateOverride] = useState('');
+
+  function addMonths(dateStr: string, months: number): string {
+    if (!dateStr) return '';
+    const d = new Date(`${dateStr}T00:00:00.000Z`);
+    d.setUTCMonth(d.getUTCMonth() + months);
+    return d.toISOString().slice(0, 10);
+  }
+
+  const suggestedRenewalDate = addMonths(form.endDate, 30);
+  const renewalDateValue = renewalDateOverride || suggestedRenewalDate;
+
+  function handleApplyRenewal() {
+    if (!renewalDateValue) return;
+    update('endDate', renewalDateValue);
+    setRenewalDateOverride('');
+  }
+
+  const renewalPending = isEditing && contract && form.endDate !== timestampToDateInput(contract.endDate);
+
   useEffect(() => {
     async function loadOptions() {
       const [tenantsSnap, propertiesSnap] = await Promise.all([
@@ -45,6 +100,20 @@ export function ContractForm({ contract }: { contract?: Contract }) {
     }
     loadOptions();
   }, []);
+
+  useEffect(() => {
+    async function loadRenewalHistory() {
+      if (!isEditing || !contract) return;
+      const snap = await getDocs(
+        query(collection(db, 'history'), where('contractId', '==', contract.id), where('type', '==', 'renewal'))
+      );
+      const rows = snap.docs
+        .map((d) => ({ id: d.id, ...d.data() }) as HistoryEntry)
+        .sort((a, b) => (b.date?.toMillis() ?? 0) - (a.date?.toMillis() ?? 0));
+      setRenewalHistory(rows);
+    }
+    loadRenewalHistory();
+  }, [isEditing, contract]);
 
   function update<K extends keyof typeof form>(key: K, value: (typeof form)[K]) {
     setForm((f) => ({ ...f, [key]: value }));
@@ -64,6 +133,11 @@ export function ContractForm({ contract }: { contract?: Contract }) {
         return;
       }
 
+      const newAdjustmentEntries = pendingAdjustments.map((a) => ({
+        date: dateInputToTimestamp(a.date),
+        value: parseFloat(a.value) || 0,
+      }));
+
       const payload = {
         tenantId: form.tenantId,
         tenantName: tenant.name,
@@ -79,8 +153,7 @@ export function ContractForm({ contract }: { contract?: Contract }) {
         collectsIncomeTax: form.collectsIncomeTax,
         collectsIptu: form.collectsIptu,
         status: form.status,
-        // preserva o historico de reajustes existente; nao editavel neste formulario ainda
-        adjustmentHistory: contract?.adjustmentHistory ?? [],
+        adjustmentHistory: [...existingAdjustments, ...newAdjustmentEntries],
       };
 
       if (isEditing && contract) {
@@ -98,6 +171,18 @@ export function ContractForm({ contract }: { contract?: Contract }) {
             date: payload.endDate,
             type: 'renewal',
             note: `Contrato renovado. Novo vencimento: ${formatDate(payload.endDate)} (anterior: ${formatDate(contract.endDate)}).`,
+          });
+        }
+
+        // registra cada reajuste novo no histórico também
+        for (const entry of newAdjustmentEntries) {
+          await addDoc(collection(db, 'history'), {
+            contractId: contract.id,
+            tenantName: tenant.name,
+            propertyName: property.name,
+            date: entry.date,
+            type: 'adjustment',
+            note: `Reajuste registrado. Novo valor do aluguel: ${formatCurrency(entry.value)}.`,
           });
         }
       } else {
@@ -179,25 +264,68 @@ export function ContractForm({ contract }: { contract?: Contract }) {
         </div>
       </div>
 
+      {isEditing && (
+        <div className="border border-hairline bg-paperDim/40 p-4">
+          <p className={labelClass}>Histórico de renovações</p>
+
+          {renewalHistory.length === 0 && !renewalPending && (
+            <p className="mt-2 text-sm text-slate">Nenhuma renovação registrada ainda.</p>
+          )}
+
+          {renewalHistory.length > 0 && (
+            <ul className="mt-2 space-y-1 text-sm">
+              {renewalHistory.map((h) => (
+                <li key={h.id} className="flex justify-between border-b border-hairline/70 py-1.5">
+                  <span>{formatDate(h.date)}</span>
+                  <span className="text-slate">novo vencimento registrado</span>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          {renewalPending && (
+            <p className="mt-2 rounded-sm bg-sage/10 px-3 py-2 text-sm text-sage">
+              Renovação pendente: vencimento alterado para {formatDate(dateInputToTimestamp(form.endDate))} — será
+              registrada no Histórico ao salvar.
+            </p>
+          )}
+
+          <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end">
+            <div>
+              <label className={labelClass}>Novo vencimento (sugestão: +30 meses)</label>
+              <input
+                type="date"
+                className={inputClass}
+                value={renewalDateValue}
+                onChange={(e) => setRenewalDateOverride(e.target.value)}
+              />
+            </div>
+            <button
+              type="button"
+              onClick={handleApplyRenewal}
+              className="border border-ink px-4 py-2 text-sm text-ink hover:bg-ink hover:text-paper"
+            >
+              + Registrar renovação
+            </button>
+          </div>
+          <p className="mt-2 text-xs text-slate">
+            Isso atualiza o campo "Fim do contrato" acima. A renovação fica salva no Histórico assim que você clicar
+            em "Salvar" no final do formulário.
+          </p>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
-          <label className={labelClass}>Valor original do contrato (R$)</label>
-          <input
-            type="number"
-            step="0.01"
-            className={inputClass}
-            value={form.rentValue}
-            onChange={(e) => update('rentValue', e.target.value)}
-          />
+          <label className={labelClass}>Valor original do contrato</label>
+          <CurrencyInput className={inputClass} value={form.rentValue} onChange={(v) => update('rentValue', v)} />
         </div>
         <div>
-          <label className={labelClass}>Valor atual do aluguel (R$)</label>
-          <input
-            type="number"
-            step="0.01"
+          <label className={labelClass}>Valor atual do aluguel</label>
+          <CurrencyInput
             className={inputClass}
             value={form.currentRentValue}
-            onChange={(e) => update('currentRentValue', e.target.value)}
+            onChange={(v) => update('currentRentValue', v)}
           />
         </div>
       </div>
@@ -240,6 +368,75 @@ export function ContractForm({ contract }: { contract?: Contract }) {
           Recolhe Imposto de Renda
         </label>
       </div>
+
+      {isEditing && (
+        <div className="border border-hairline bg-paperDim/40 p-4">
+          <p className={labelClass}>Histórico de reajustes</p>
+
+          {existingAdjustments.length === 0 && pendingAdjustments.length === 0 && (
+            <p className="mt-2 text-sm text-slate">Nenhum reajuste registrado ainda.</p>
+          )}
+
+          {(existingAdjustments.length > 0 || pendingAdjustments.length > 0) && (
+            <ul className="mt-2 space-y-1 text-sm">
+              {existingAdjustments
+                .slice()
+                .sort((a, b) => (b.date?.toMillis() ?? 0) - (a.date?.toMillis() ?? 0))
+                .map((a, i) => (
+                  <li key={`existing-${i}`} className="flex justify-between border-b border-hairline/70 py-1.5">
+                    <span>{formatDate(a.date)}</span>
+                    <span className="money">{formatCurrency(a.value)}</span>
+                  </li>
+                ))}
+              {pendingAdjustments.map((a, i) => (
+                <li
+                  key={`pending-${i}`}
+                  className="flex items-center justify-between border-b border-hairline/70 py-1.5 text-sage"
+                >
+                  <span>{new Date(a.date).toLocaleDateString('pt-BR', { timeZone: 'UTC' })} (novo)</span>
+                  <span className="flex items-center gap-3">
+                    <span className="money">{formatCurrency(parseFloat(a.value) || 0)}</span>
+                    <button
+                      type="button"
+                      onClick={() => handleRemovePendingAdjustment(i)}
+                      className="text-xs text-rust hover:underline"
+                    >
+                      remover
+                    </button>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3 sm:items-end">
+            <div>
+              <label className={labelClass}>Data do reajuste</label>
+              <input
+                type="date"
+                className={inputClass}
+                value={newAdjustmentDate}
+                onChange={(e) => setNewAdjustmentDate(e.target.value)}
+              />
+            </div>
+            <div>
+              <label className={labelClass}>Novo valor do aluguel</label>
+              <CurrencyInput className={inputClass} value={newAdjustmentValue} onChange={setNewAdjustmentValue} />
+            </div>
+            <button
+              type="button"
+              onClick={handleAddAdjustment}
+              className="border border-ink px-4 py-2 text-sm text-ink hover:bg-ink hover:text-paper"
+            >
+              + Adicionar reajuste
+            </button>
+          </div>
+          <p className="mt-2 text-xs text-slate">
+            Registrar aqui atualiza o "Valor atual do aluguel" acima (se for o reajuste mais recente) e fica salvo no
+            Histórico assim que você clicar em "Salvar" no final do formulário.
+          </p>
+        </div>
+      )}
 
       <div>
         <label className={labelClass}>Status</label>

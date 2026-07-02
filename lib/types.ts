@@ -43,6 +43,7 @@ export interface Invoice {
   insuranceAmount: number;
   refundAmount: number;
   condoFeeAmount: number;
+  condoAmount: number;
   totalAmount: number;
   status: InvoiceStatus;
   notes: string;

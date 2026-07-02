@@ -13,6 +13,7 @@ export function ReceiptImageCard({ invoice, tenant, property }: Props) {
   if (invoice.iptuAmount) items.push({ label: 'IPTU', value: invoice.iptuAmount });
   if (invoice.insuranceAmount) items.push({ label: 'Seguro', value: invoice.insuranceAmount });
   if (invoice.extraFeeAmount) items.push({ label: 'Taxa extra', value: invoice.extraFeeAmount });
+  if (invoice.condoAmount) items.push({ label: 'Condomínio do mês', value: invoice.condoAmount });
   if (invoice.refundAmount) items.push({ label: 'Reembolso (desconto)', value: -invoice.refundAmount });
   if (invoice.condoFeeAmount) items.push({ label: 'Taxa condominial (desconto)', value: -invoice.condoFeeAmount });
 

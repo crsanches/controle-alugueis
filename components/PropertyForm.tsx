@@ -6,6 +6,7 @@ import { addDoc, collection, deleteDoc, doc, updateDoc } from 'firebase/firestor
 import { db } from '@/lib/firebase';
 import type { Property } from '@/lib/types';
 import { inputClass, labelClass, primaryButtonClass, secondaryButtonClass, dangerLinkClass } from '@/lib/formStyles';
+import { CurrencyInput } from '@/components/CurrencyInput';
 
 export function PropertyForm({ property }: { property?: Property }) {
   const router = useRouter();
@@ -115,44 +116,24 @@ export function PropertyForm({ property }: { property?: Property }) {
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
-          <label className={labelClass}>Taxa condominial mensal (R$)</label>
-          <input
-            type="number"
-            step="0.01"
-            className={inputClass}
-            value={form.condoFee}
-            onChange={(e) => update('condoFee', e.target.value)}
-          />
+          <label className={labelClass}>Taxa condominial mensal</label>
+          <CurrencyInput className={inputClass} value={form.condoFee} onChange={(v) => update('condoFee', v)} />
         </div>
         <div>
-          <label className={labelClass}>IPTU mensal (R$)</label>
-          <input
-            type="number"
-            step="0.01"
-            className={inputClass}
-            value={form.monthlyIptu}
-            onChange={(e) => update('monthlyIptu', e.target.value)}
-          />
+          <label className={labelClass}>IPTU mensal</label>
+          <CurrencyInput className={inputClass} value={form.monthlyIptu} onChange={(v) => update('monthlyIptu', v)} />
         </div>
         <div>
-          <label className={labelClass}>Seguro mensal (R$)</label>
-          <input
-            type="number"
-            step="0.01"
+          <label className={labelClass}>Seguro mensal</label>
+          <CurrencyInput
             className={inputClass}
             value={form.monthlyInsurance}
-            onChange={(e) => update('monthlyInsurance', e.target.value)}
+            onChange={(v) => update('monthlyInsurance', v)}
           />
         </div>
         <div>
-          <label className={labelClass}>Taxa de reembolso (R$)</label>
-          <input
-            type="number"
-            step="0.01"
-            className={inputClass}
-            value={form.refundFee}
-            onChange={(e) => update('refundFee', e.target.value)}
-          />
+          <label className={labelClass}>Taxa de reembolso</label>
+          <CurrencyInput className={inputClass} value={form.refundFee} onChange={(v) => update('refundFee', v)} />
         </div>
       </div>
 

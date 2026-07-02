@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { collection, getDocs } from 'firebase/firestore';
+import type { Timestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import type { Contract, HistoryEntry, Invoice } from '@/lib/types';
 import { formatCurrency, formatDate } from '@/lib/format';
@@ -49,15 +50,34 @@ export default function DashboardPage() {
     };
   }, [contracts, invoices]);
 
-  const expiringContracts = useMemo(() => {
+  const upcomingAdjustments = useMemo(() => {
     const now = Date.now();
     return contracts
-      .filter((c) => c.status === 'active' && c.endDate)
+      .filter((c) => c.status === 'active' && c.nextAdjustmentDate)
       .filter((c) => {
-        const end = c.endDate!.toDate().getTime();
-        return end >= now && end <= now + SIXTY_DAYS_MS;
+        const next = c.nextAdjustmentDate!.toDate().getTime();
+        return next >= now && next <= now + SIXTY_DAYS_MS;
       })
-      .sort((a, b) => a.endDate!.toDate().getTime() - b.endDate!.toDate().getTime());
+      .sort((a, b) => a.nextAdjustmentDate!.toDate().getTime() - b.nextAdjustmentDate!.toDate().getTime());
+  }, [contracts]);
+
+  const adjustedContracts = useMemo(() => {
+    const now = Date.now();
+    return contracts
+      .filter((c) => c.status === 'active' && c.adjustmentHistory?.length)
+      .map((c) => {
+        // pega o reajuste mais recente do contrato
+        const lastAdjustment = c.adjustmentHistory
+          .filter((a) => a.date)
+          .sort((a, b) => b.date!.toDate().getTime() - a.date!.toDate().getTime())[0];
+        return lastAdjustment ? { contract: c, adjustmentDate: lastAdjustment.date! } : null;
+      })
+      .filter((r): r is { contract: Contract; adjustmentDate: Timestamp } => {
+        if (!r) return false;
+        const date = r.adjustmentDate.toDate().getTime();
+        return date >= now - SIXTY_DAYS_MS && date <= now;
+      })
+      .sort((a, b) => b.adjustmentDate.toDate().getTime() - a.adjustmentDate.toDate().getTime());
   }, [contracts]);
 
   const renewedContracts = useMemo(() => {
@@ -126,18 +146,19 @@ export default function DashboardPage() {
             </AlertSection>
           )}
 
-          {expiringContracts.length > 0 && (
-            <AlertSection title="Contratos a vencer nos próximos 60 dias" accent="text-terracotta">
+          {adjustedContracts.length > 0 && (
+            <AlertSection title="Contratos reajustados nos últimos 60 dias" accent="text-sage">
               <table className="ledger-table">
                 <thead>
                   <tr>
                     <th>Inquilino</th>
                     <th>Imóvel</th>
-                    <th>Fim do contrato</th>
+                    <th>Data do reajuste</th>
+                    <th>Valor mensal atual</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {expiringContracts.map((c) => (
+                  {adjustedContracts.map(({ contract: c, adjustmentDate }) => (
                     <tr key={c.id}>
                       <td>
                         <Link href={`/contracts/${c.id}/edit`} className="hover:text-terracotta">
@@ -145,7 +166,37 @@ export default function DashboardPage() {
                         </Link>
                       </td>
                       <td>{c.propertyName}</td>
-                      <td className="money">{formatDate(c.endDate)}</td>
+                      <td className="money">{formatDate(adjustmentDate)}</td>
+                      <td className="money">{formatCurrency(c.currentRentValue || c.rentValue)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </AlertSection>
+          )}
+
+          {upcomingAdjustments.length > 0 && (
+            <AlertSection title="Contratos a renovar nos próximos 60 dias" accent="text-terracotta">
+              <table className="ledger-table">
+                <thead>
+                  <tr>
+                    <th>Inquilino</th>
+                    <th>Imóvel</th>
+                    <th>Próximo reajuste</th>
+                    <th>Valor mensal atual</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {upcomingAdjustments.map((c) => (
+                    <tr key={c.id}>
+                      <td>
+                        <Link href={`/contracts/${c.id}/edit`} className="hover:text-terracotta">
+                          {c.tenantName}
+                        </Link>
+                      </td>
+                      <td>{c.propertyName}</td>
+                      <td className="money">{formatDate(c.nextAdjustmentDate)}</td>
+                      <td className="money">{formatCurrency(c.currentRentValue || c.rentValue)}</td>
                     </tr>
                   ))}
                 </tbody>

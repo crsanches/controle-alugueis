@@ -7,6 +7,7 @@ import { db } from '@/lib/firebase';
 import type { Contract, Invoice, Property } from '@/lib/types';
 import { formatCurrency, monthInputToTimestamp, timestampToMonthInput, timestampToDateInput, dateInputToTimestamp } from '@/lib/format';
 import { inputClass, labelClass, primaryButtonClass, secondaryButtonClass, dangerLinkClass } from '@/lib/formStyles';
+import { CurrencyInput } from '@/components/CurrencyInput';
 
 export function InvoiceForm({ invoice }: { invoice?: Invoice }) {
   const router = useRouter();
@@ -20,10 +21,16 @@ export function InvoiceForm({ invoice }: { invoice?: Invoice }) {
     contractId: invoice?.contractId ?? '',
     referenceMonth: timestampToMonthInput(invoice?.referenceMonth),
     dueDay: String(invoice?.dueDay ?? ''),
-    rentAmount: String(invoice?.rentAmount ?? 0),
+    // usa o valor ATUAL do aluguel (currentRentAmount), nao o original/
+    // congelado (rentAmount) — mesmo campo problemático dos boletos
+    // migrados do sistema antigo. Vale tanto pra boletos pagos quanto
+    // pendentes; pendentes ainda recebem um refresh abaixo com o valor
+    // mais recente do contrato.
+    rentAmount: String(invoice?.currentRentAmount || invoice?.rentAmount || 0),
     iptuAmount: String(invoice?.iptuAmount ?? 0),
     extraFeeAmount: String(invoice?.extraFeeAmount ?? 0),
     insuranceAmount: String(invoice?.insuranceAmount ?? 0),
+    condoAmount: String(invoice?.condoAmount ?? 0),
     refundAmount: String(invoice?.refundAmount ?? 0),
     condoFeeAmount: String(invoice?.condoFeeAmount ?? 0),
     status: invoice?.status === 'paid' ? 'paid' : 'pending',
@@ -60,6 +67,18 @@ export function InvoiceForm({ invoice }: { invoice?: Invoice }) {
     loadOptions();
   }, [isEditing, invoice]);
 
+  // Só mostra contratos ativos na lista, exceto se o boleto sendo editado
+  // já estiver vinculado a um contrato que não é mais ativo — nesse caso
+  // ele continua aparecendo, senão a seleção ficaria em branco.
+  const contractOptions = useMemo(() => {
+    const activeOnes = contracts.filter((c) => c.status === 'active');
+    if (isEditing && invoice && !activeOnes.some((c) => c.id === invoice.contractId)) {
+      const current = contracts.find((c) => c.id === invoice.contractId);
+      if (current) return [...activeOnes, current];
+    }
+    return activeOnes;
+  }, [contracts, isEditing, invoice]);
+
   function update<K extends keyof typeof form>(key: K, value: (typeof form)[K]) {
     setForm((f) => ({ ...f, [key]: value }));
   }
@@ -82,6 +101,8 @@ export function InvoiceForm({ invoice }: { invoice?: Invoice }) {
       insuranceAmount: String(property?.monthlyInsurance ?? 0),
       condoFeeAmount: String(property?.condoFee ?? 0),
       refundAmount: String(property?.refundFee ?? 0),
+      // condoAmount (condomínio do mês) não é preenchido automaticamente —
+      // varia todo mês, então precisa ser digitado a cada boleto.
     }));
   }
 
@@ -91,7 +112,8 @@ export function InvoiceForm({ invoice }: { invoice?: Invoice }) {
       n(form.rentAmount) +
       n(form.iptuAmount) +
       n(form.extraFeeAmount) +
-      n(form.insuranceAmount) -
+      n(form.insuranceAmount) +
+      n(form.condoAmount) -
       n(form.refundAmount) -
       n(form.condoFeeAmount)
     );
@@ -134,6 +156,7 @@ export function InvoiceForm({ invoice }: { invoice?: Invoice }) {
         iptuAmount: parseFloat(form.iptuAmount) || 0,
         extraFeeAmount: parseFloat(form.extraFeeAmount) || 0,
         insuranceAmount: parseFloat(form.insuranceAmount) || 0,
+        condoAmount: parseFloat(form.condoAmount) || 0,
         refundAmount: parseFloat(form.refundAmount) || 0,
         condoFeeAmount: parseFloat(form.condoFeeAmount) || 0,
         totalAmount,
@@ -186,9 +209,10 @@ export function InvoiceForm({ invoice }: { invoice?: Invoice }) {
           required
         >
           <option value="">Selecione...</option>
-          {contracts.map((c) => (
+          {contractOptions.map((c) => (
             <option key={c.id} value={c.id}>
               {c.tenantName} — {c.propertyName}
+              {c.status !== 'active' ? ' (inativo)' : ''}
             </option>
           ))}
         </select>
@@ -230,28 +254,33 @@ export function InvoiceForm({ invoice }: { invoice?: Invoice }) {
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div>
-          <label className={labelClass}>Aluguel (R$)</label>
-          <input type="number" step="0.01" className={inputClass} value={form.rentAmount} onChange={(e) => update('rentAmount', e.target.value)} />
+          <label className={labelClass}>Aluguel</label>
+          <CurrencyInput className={inputClass} value={form.rentAmount} onChange={(v) => update('rentAmount', v)} />
         </div>
         <div>
-          <label className={labelClass}>IPTU (R$)</label>
-          <input type="number" step="0.01" className={inputClass} value={form.iptuAmount} onChange={(e) => update('iptuAmount', e.target.value)} />
+          <label className={labelClass}>IPTU</label>
+          <CurrencyInput className={inputClass} value={form.iptuAmount} onChange={(v) => update('iptuAmount', v)} />
         </div>
         <div>
-          <label className={labelClass}>Taxa extra (R$)</label>
-          <input type="number" step="0.01" className={inputClass} value={form.extraFeeAmount} onChange={(e) => update('extraFeeAmount', e.target.value)} />
+          <label className={labelClass}>Taxa extra</label>
+          <CurrencyInput className={inputClass} value={form.extraFeeAmount} onChange={(v) => update('extraFeeAmount', v)} />
         </div>
         <div>
-          <label className={labelClass}>Seguro (R$)</label>
-          <input type="number" step="0.01" className={inputClass} value={form.insuranceAmount} onChange={(e) => update('insuranceAmount', e.target.value)} />
+          <label className={labelClass}>Seguro</label>
+          <CurrencyInput className={inputClass} value={form.insuranceAmount} onChange={(v) => update('insuranceAmount', v)} />
         </div>
         <div>
-          <label className={labelClass}>Reembolso (R$, subtrai)</label>
-          <input type="number" step="0.01" className={inputClass} value={form.refundAmount} onChange={(e) => update('refundAmount', e.target.value)} />
+          <label className={labelClass}>Condomínio do mês (soma)</label>
+          <CurrencyInput className={inputClass} value={form.condoAmount} onChange={(v) => update('condoAmount', v)} />
+          <p className="mt-1 text-xs text-slate">Varia todo mês — digite o valor do boleto do condomínio atual.</p>
         </div>
         <div>
-          <label className={labelClass}>Taxa condominial (R$, subtrai)</label>
-          <input type="number" step="0.01" className={inputClass} value={form.condoFeeAmount} onChange={(e) => update('condoFeeAmount', e.target.value)} />
+          <label className={labelClass}>Reembolso (desconto)</label>
+          <CurrencyInput className={inputClass} value={form.refundAmount} onChange={(v) => update('refundAmount', v)} />
+        </div>
+        <div>
+          <label className={labelClass}>Taxa condominial do imóvel (desconto)</label>
+          <CurrencyInput className={inputClass} value={form.condoFeeAmount} onChange={(v) => update('condoFeeAmount', v)} />
         </div>
       </div>
 
@@ -298,10 +327,10 @@ export function InvoiceForm({ invoice }: { invoice?: Invoice }) {
       </div>
 
       <div>
-        <label className={labelClass}>Observações</label>
+        <label className={labelClass}>Observações:</label>
         <textarea
           className={inputClass}
-          rows={3}
+          rows={8}
           value={form.notes}
           onChange={(e) => update('notes', e.target.value)}
         />
