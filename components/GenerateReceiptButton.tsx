@@ -63,7 +63,7 @@ export function GenerateReceiptButton({
         type="button"
         onClick={handleClick}
         disabled={generating}
-        className="font-mono text-[11px] uppercase tracking-wide text-slate hover:text-terracotta disabled:opacity-50"
+        className="font-mono text-[11px] uppercase tracking-wide text-slate hover:text-accent disabled:opacity-50"
       >
         {generating ? '...' : 'PDF'}
       </button>

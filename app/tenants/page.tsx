@@ -33,10 +33,10 @@ export default function TenantsPage() {
     <div>
       <header className="mb-8 flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="font-mono text-xs uppercase tracking-widest text-slate">Inquilinos</p>
-          <h1 className="font-display text-3xl">Inquilinos cadastrados</h1>
+          <p className="text-xs font-medium uppercase tracking-wide text-accent">Inquilinos</p>
+          <h1 className="font-display text-2xl">Inquilinos cadastrados</h1>
         </div>
-        <Link href="/tenants/new" className="bg-ink px-4 py-2 text-sm text-paper hover:opacity-90">
+        <Link href="/tenants/new" className="rounded-md bg-accent px-4 py-2 text-sm text-white hover:opacity-90">
           + Novo inquilino
         </Link>
       </header>
@@ -60,7 +60,7 @@ export default function TenantsPage() {
             {tenants.map((t) => (
               <tr key={t.id} className="cursor-pointer">
                 <td>
-                  <Link href={`/tenants/${t.id}/edit`} className="hover:text-terracotta">
+                  <Link href={`/tenants/${t.id}/edit`} className="hover:text-accent">
                     {t.name}
                   </Link>
                 </td>

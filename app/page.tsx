@@ -117,8 +117,8 @@ export default function DashboardPage() {
   return (
     <div>
       <header className="mb-8">
-        <p className="font-mono text-xs uppercase tracking-widest text-slate">Visão geral</p>
-        <h1 className="font-display text-3xl">Painel</h1>
+        <p className="text-xs font-medium uppercase tracking-wide text-accent">Visão geral</p>
+        <h1 className="font-display text-2xl">Painel</h1>
       </header>
 
       {loading && <p className="text-slate">Carregando...</p>}
@@ -127,9 +127,9 @@ export default function DashboardPage() {
         <div className="space-y-10">
           <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
             {cards.map((card) => (
-              <div key={card.label} className="border border-hairline bg-white/40 p-5">
-                <p className="font-mono text-[11px] uppercase tracking-widest text-slate">{card.label}</p>
-                <p className="mt-2 font-display text-2xl money">{card.value}</p>
+              <div key={card.label} className="rounded-md border border-hairline bg-white/40 p-5">
+                <p className="text-[11px] font-medium uppercase tracking-wide text-slate">{card.label}</p>
+                <p className="mt-2 font-display text-xl money">{card.value}</p>
               </div>
             ))}
           </div>
@@ -141,7 +141,7 @@ export default function DashboardPage() {
           )}
 
           {pendingInvoices.length > 0 && (
-            <AlertSection title="Boletos pendentes" accent="text-terracotta">
+            <AlertSection title="Boletos pendentes" accent="text-accent">
               <InvoiceAlertTable rows={pendingInvoices} />
             </AlertSection>
           )}
@@ -161,7 +161,7 @@ export default function DashboardPage() {
                   {adjustedContracts.map(({ contract: c, adjustmentDate }) => (
                     <tr key={c.id}>
                       <td>
-                        <Link href={`/contracts/${c.id}/edit`} className="hover:text-terracotta">
+                        <Link href={`/contracts/${c.id}/edit`} className="hover:text-accent">
                           {c.tenantName}
                         </Link>
                       </td>
@@ -176,7 +176,7 @@ export default function DashboardPage() {
           )}
 
           {upcomingAdjustments.length > 0 && (
-            <AlertSection title="Contratos a renovar nos próximos 60 dias" accent="text-terracotta">
+            <AlertSection title="Contratos a renovar nos próximos 60 dias" accent="text-accent">
               <table className="ledger-table">
                 <thead>
                   <tr>
@@ -190,7 +190,7 @@ export default function DashboardPage() {
                   {upcomingAdjustments.map((c) => (
                     <tr key={c.id}>
                       <td>
-                        <Link href={`/contracts/${c.id}/edit`} className="hover:text-terracotta">
+                        <Link href={`/contracts/${c.id}/edit`} className="hover:text-accent">
                           {c.tenantName}
                         </Link>
                       </td>
@@ -218,7 +218,7 @@ export default function DashboardPage() {
                   {renewedContracts.map((h) => (
                     <tr key={h.id}>
                       <td>
-                        <Link href={`/contracts/${h.contractId}/edit`} className="hover:text-terracotta">
+                        <Link href={`/contracts/${h.contractId}/edit`} className="hover:text-accent">
                           {h.tenantName}
                         </Link>
                       </td>
@@ -247,7 +247,7 @@ function AlertSection({
 }) {
   return (
     <section>
-      <h2 className={`mb-3 font-mono text-xs uppercase tracking-widest ${accent}`}>{title}</h2>
+      <h2 className={`mb-3 text-xs font-medium uppercase tracking-wide ${accent}`}>{title}</h2>
       <div className="table-scroll">{children}</div>
     </section>
   );
@@ -268,7 +268,7 @@ function InvoiceAlertTable({ rows }: { rows: Invoice[] }) {
         {rows.map((inv) => (
           <tr key={inv.id}>
             <td>
-              <Link href={`/invoices/${inv.id}/edit`} className="hover:text-terracotta">
+              <Link href={`/invoices/${inv.id}/edit`} className="hover:text-accent">
                 {inv.tenantName}
               </Link>
             </td>

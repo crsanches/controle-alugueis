@@ -108,7 +108,7 @@ export function SendWhatsAppButton({ invoice, compact = false }: { invoice: Invo
         disabled={status === 'working'}
         className={
           compact
-            ? 'font-mono text-[11px] uppercase tracking-wide text-sage hover:text-terracotta disabled:opacity-50'
+            ? 'font-mono text-[11px] uppercase tracking-wide text-sage hover:text-accent disabled:opacity-50'
             : 'bg-sage px-4 py-2 text-sm text-white transition-opacity hover:opacity-90 disabled:opacity-50'
         }
       >

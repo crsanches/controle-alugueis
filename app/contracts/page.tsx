@@ -34,10 +34,10 @@ export default function ContractsPage() {
     <div>
       <header className="mb-8 flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="font-mono text-xs uppercase tracking-widest text-slate">Contratos</p>
-          <h1 className="font-display text-3xl">Contratos de locação</h1>
+          <p className="text-xs font-medium uppercase tracking-wide text-accent">Contratos</p>
+          <h1 className="font-display text-2xl">Contratos de locação</h1>
         </div>
-        <Link href="/contracts/new" className="bg-ink px-4 py-2 text-sm text-paper hover:opacity-90">
+        <Link href="/contracts/new" className="rounded-md bg-accent px-4 py-2 text-sm text-white hover:opacity-90">
           + Novo contrato
         </Link>
       </header>
@@ -62,7 +62,7 @@ export default function ContractsPage() {
             {contracts.map((c) => (
               <tr key={c.id}>
                 <td>
-                  <Link href={`/contracts/${c.id}/edit`} className="hover:text-terracotta">
+                  <Link href={`/contracts/${c.id}/edit`} className="hover:text-accent">
                     {c.tenantName}
                   </Link>
                 </td>

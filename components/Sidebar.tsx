@@ -34,7 +34,7 @@ export function Sidebar() {
           type="button"
           onClick={() => setMobileOpen((v) => !v)}
           aria-label="Abrir menu"
-          className="flex h-9 w-9 items-center justify-center rounded-sm border border-paper/30"
+          className="flex h-9 w-9 items-center justify-center rounded-md border border-paper/30"
         >
           <span className="font-mono text-lg leading-none">{mobileOpen ? '×' : '≡'}</span>
         </button>
@@ -49,7 +49,7 @@ export function Sidebar() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`rounded-sm px-3 py-2.5 text-sm ${
+                className={`rounded-md px-3 py-2.5 text-sm ${
                   active ? 'bg-paper/10 text-paper' : 'text-paper/70'
                 }`}
               >
@@ -65,7 +65,7 @@ export function Sidebar() {
         <div>
           <div className="mb-10">
             <p className="font-display text-2xl leading-none">Livro de Aluguéis</p>
-            <p className="mt-1 font-mono text-[11px] uppercase tracking-widest text-paper/50">
+            <p className="mt-1 font-mono text-[11px] uppercase tracking-wide text-paper/50">
               registro &amp; cobrança
             </p>
           </div>
@@ -77,7 +77,7 @@ export function Sidebar() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`rounded-sm px-3 py-2 text-sm transition-colors ${
+                  className={`rounded-md px-3 py-2 text-sm transition-colors ${
                     active
                       ? 'bg-paper/10 text-paper'
                       : 'text-paper/60 hover:bg-paper/5 hover:text-paper'
@@ -90,7 +90,7 @@ export function Sidebar() {
           </nav>
         </div>
 
-        <p className="font-mono text-[10px] uppercase tracking-widest text-paper/30">
+        <p className="font-mono text-[10px] uppercase tracking-wide text-paper/30">
           v1 · dados migrados
         </p>
       </aside>

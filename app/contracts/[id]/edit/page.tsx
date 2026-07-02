@@ -22,8 +22,8 @@ export default function EditContractPage({ params }: { params: { id: string } })
   return (
     <div>
       <header className="mb-8">
-        <p className="font-mono text-xs uppercase tracking-widest text-slate">Contratos</p>
-        <h1 className="font-display text-3xl">Editar contrato</h1>
+        <p className="text-xs font-medium uppercase tracking-wide text-accent">Contratos</p>
+        <h1 className="font-display text-2xl">Editar contrato</h1>
       </header>
       {loading && <p className="text-slate">Carregando...</p>}
       {!loading && contract && <ContractForm contract={contract} />}

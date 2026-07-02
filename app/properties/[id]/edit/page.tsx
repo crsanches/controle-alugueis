@@ -22,8 +22,8 @@ export default function EditPropertyPage({ params }: { params: { id: string } })
   return (
     <div>
       <header className="mb-8">
-        <p className="font-mono text-xs uppercase tracking-widest text-slate">Imóveis</p>
-        <h1 className="font-display text-3xl">Editar imóvel</h1>
+        <p className="text-xs font-medium uppercase tracking-wide text-accent">Imóveis</p>
+        <h1 className="font-display text-2xl">Editar imóvel</h1>
       </header>
       {loading && <p className="text-slate">Carregando...</p>}
       {!loading && property && <PropertyForm property={property} />}

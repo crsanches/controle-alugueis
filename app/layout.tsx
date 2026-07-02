@@ -1,12 +1,12 @@
 import type { Metadata } from 'next';
-import { Fraunces, Inter, IBM_Plex_Mono } from 'next/font/google';
+import { Manrope, Inter, IBM_Plex_Mono } from 'next/font/google';
 import { Sidebar } from '@/components/Sidebar';
 import './globals.css';
 
-const fraunces = Fraunces({
+const manrope = Manrope({
   subsets: ['latin'],
-  variable: '--font-fraunces',
-  weight: ['400', '500', '600'],
+  variable: '--font-manrope',
+  weight: ['500', '600', '700'],
 });
 
 const inter = Inter({
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR">
-      <body className={`${fraunces.variable} ${inter.variable} ${plexMono.variable} font-sans`}>
+      <body className={`${manrope.variable} ${inter.variable} ${plexMono.variable} font-sans`}>
         <div className="flex min-h-screen flex-col md:flex-row">
           <Sidebar />
           <main className="flex-1 overflow-y-auto px-4 py-6 md:px-10 md:py-8">{children}</main>

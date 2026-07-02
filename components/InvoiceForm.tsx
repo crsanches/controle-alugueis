@@ -284,9 +284,9 @@ export function InvoiceForm({ invoice }: { invoice?: Invoice }) {
         </div>
       </div>
 
-      <div className="border border-hairline bg-paperDim/60 px-4 py-3">
+      <div className="rounded-md border border-hairline bg-paperDim/60 px-4 py-3">
         <p className={labelClass}>Total calculado</p>
-        <p className="font-display text-2xl money">{formatCurrency(totalAmount)}</p>
+        <p className="font-display text-xl money">{formatCurrency(totalAmount)}</p>
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">

@@ -25,8 +25,8 @@ export default function EditInvoicePage({ params }: { params: { id: string } }) 
     <div>
       <header className="mb-8 flex items-end justify-between">
         <div>
-          <p className="font-mono text-xs uppercase tracking-widest text-slate">Boletos</p>
-          <h1 className="font-display text-3xl">Editar boleto</h1>
+          <p className="text-xs font-medium uppercase tracking-wide text-accent">Boletos</p>
+          <h1 className="font-display text-2xl">Editar boleto</h1>
         </div>
         {!loading && invoice && (
           <div className="flex gap-3">

@@ -265,7 +265,7 @@ export function ContractForm({ contract }: { contract?: Contract }) {
       </div>
 
       {isEditing && (
-        <div className="border border-hairline bg-paperDim/40 p-4">
+        <div className="rounded-md border border-hairline bg-paperDim/40 p-4">
           <p className={labelClass}>Histórico de renovações</p>
 
           {renewalHistory.length === 0 && !renewalPending && (
@@ -284,7 +284,7 @@ export function ContractForm({ contract }: { contract?: Contract }) {
           )}
 
           {renewalPending && (
-            <p className="mt-2 rounded-sm bg-sage/10 px-3 py-2 text-sm text-sage">
+            <p className="mt-2 rounded-md bg-sage/10 px-3 py-2 text-sm text-sage">
               Renovação pendente: vencimento alterado para {formatDate(dateInputToTimestamp(form.endDate))} — será
               registrada no Histórico ao salvar.
             </p>
@@ -370,7 +370,7 @@ export function ContractForm({ contract }: { contract?: Contract }) {
       </div>
 
       {isEditing && (
-        <div className="border border-hairline bg-paperDim/40 p-4">
+        <div className="rounded-md border border-hairline bg-paperDim/40 p-4">
           <p className={labelClass}>Histórico de reajustes</p>
 
           {existingAdjustments.length === 0 && pendingAdjustments.length === 0 && (

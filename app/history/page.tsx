@@ -17,7 +17,7 @@ const TYPE_LABELS: Record<HistoryEntryType, string> = {
 const TYPE_STYLES: Record<HistoryEntryType, string> = {
   general: 'bg-slate/15 text-slate',
   renewal: 'bg-sage/15 text-sage',
-  adjustment: 'bg-terracotta/15 text-terracotta',
+  adjustment: 'bg-accent/15 text-accent',
   incident: 'bg-rust/15 text-rust',
 };
 
@@ -81,19 +81,19 @@ export default function HistoryPage() {
     <div>
       <header className="mb-6 flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="font-mono text-xs uppercase tracking-widest text-slate">Histórico</p>
-          <h1 className="font-display text-3xl">Observações e ocorrências</h1>
+          <p className="text-xs font-medium uppercase tracking-wide text-accent">Histórico</p>
+          <h1 className="font-display text-2xl">Observações e ocorrências</h1>
         </div>
-        <Link href="/history/new" className="bg-ink px-4 py-2 text-sm text-paper hover:opacity-90">
+        <Link href="/history/new" className="rounded-md bg-accent px-4 py-2 text-sm text-white hover:opacity-90">
           + Novo registro
         </Link>
       </header>
 
       {!loading && !error && (
         <div className="mb-4">
-          <label className="mr-2 font-mono text-xs uppercase tracking-widest text-slate">Imóvel:</label>
+          <label className="mr-2 text-xs font-medium uppercase tracking-wide text-accent">Imóvel:</label>
           <select
-            className="border border-hairline bg-white/60 px-2 py-1 text-sm"
+            className="rounded-md border border-hairline bg-white/60 px-2 py-1 text-sm"
             value={propertyFilter}
             onChange={(e) => setPropertyFilter(e.target.value)}
           >
@@ -126,7 +126,7 @@ export default function HistoryPage() {
             {filtered.map((h) => (
               <tr key={h.id}>
                 <td className="money whitespace-nowrap">
-                  <Link href={`/history/${h.id}/edit`} className="hover:text-terracotta">
+                  <Link href={`/history/${h.id}/edit`} className="hover:text-accent">
                     {formatDate(h.date)}
                   </Link>
                 </td>
@@ -134,7 +134,7 @@ export default function HistoryPage() {
                 <td>{h.tenantName}</td>
                 <td>
                   <span
-                    className={`inline-block rounded-sm px-2 py-0.5 font-mono text-[11px] uppercase tracking-wide ${TYPE_STYLES[h.type]}`}
+                    className={`inline-block rounded-md px-2 py-0.5 font-mono text-[11px] uppercase tracking-wide ${TYPE_STYLES[h.type]}`}
                   >
                     {TYPE_LABELS[h.type]}
                   </span>

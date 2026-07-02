@@ -2,7 +2,7 @@ const STATUS_STYLES: Record<string, string> = {
   active: 'bg-sage/15 text-sage',
   paid: 'bg-sage/15 text-sage',
   inactive: 'bg-slate/15 text-slate',
-  pending: 'bg-terracotta/15 text-terracotta',
+  pending: 'bg-accent/15 text-accent',
   late: 'bg-rust/15 text-rust',
   unknown: 'bg-slate/15 text-slate',
 };
@@ -21,7 +21,7 @@ export function StatusBadge({ status }: { status: string }) {
   const label = STATUS_LABELS[status] ?? status;
 
   return (
-    <span className={`inline-block rounded-sm px-2 py-0.5 font-mono text-[11px] uppercase tracking-wide ${style}`}>
+    <span className={`inline-block rounded-md px-2 py-0.5 font-mono text-[11px] uppercase tracking-wide ${style}`}>
       {label}
     </span>
   );

@@ -20,23 +20,23 @@ export function ReceiptImageCard({ invoice, tenant, property }: Props) {
   return (
     <div className="w-[800px] bg-paper p-12 font-sans text-ink">
       <p className="font-display text-4xl text-[#1D4ED8]">Recibo de Aluguel</p>
-      <p className="mt-1 font-mono text-xs uppercase tracking-widest text-slate">
+      <p className="mt-1 text-xs font-medium uppercase tracking-wide text-accent">
         Referente a {formatMonth(invoice.referenceMonth)}
       </p>
 
       <div className="mt-8 grid grid-cols-2 gap-8">
         <div>
-          <p className="font-mono text-[11px] uppercase tracking-widest text-slate">Locador</p>
+          <p className="font-mono text-[11px] uppercase tracking-wide text-slate">Locador</p>
           <p className="mt-1 text-lg">{LANDLORD.name}</p>
         </div>
         <div>
-          <p className="font-mono text-[11px] uppercase tracking-widest text-slate">Locatário</p>
+          <p className="font-mono text-[11px] uppercase tracking-wide text-slate">Locatário</p>
           <p className="mt-1 text-lg">{invoice.tenantName}</p>
         </div>
       </div>
 
       <div className="mt-6">
-        <p className="font-mono text-[11px] uppercase tracking-widest text-slate">Imóvel</p>
+        <p className="font-mono text-[11px] uppercase tracking-wide text-slate">Imóvel</p>
         <p className="mt-1 text-lg">
           {invoice.propertyName}
           {property?.address ? ` — ${property.address}` : ''}
@@ -52,7 +52,7 @@ export function ReceiptImageCard({ invoice, tenant, property }: Props) {
         ))}
         <div className="flex justify-between border-t-2 border-ink py-4">
           <span className="text-xl font-semibold">Total</span>
-          <span className="font-mono text-2xl font-semibold text-terracotta">
+          <span className="font-mono text-2xl font-semibold text-accent">
             {formatCurrency(invoice.totalAmount)}
           </span>
         </div>
@@ -60,18 +60,18 @@ export function ReceiptImageCard({ invoice, tenant, property }: Props) {
 
       <div className="mt-8 grid grid-cols-2 gap-8">
         <div>
-          <p className="font-mono text-[11px] uppercase tracking-widest text-slate">Vencimento</p>
+          <p className="font-mono text-[11px] uppercase tracking-wide text-slate">Vencimento</p>
           <p className="mt-1 text-lg">{formatDate(invoice.dueDate)}</p>
         </div>
         {invoice.status === 'paid' && invoice.paidDate ? (
           <div>
-            <p className="font-mono text-[11px] uppercase tracking-widest text-slate">Pago em</p>
+            <p className="font-mono text-[11px] uppercase tracking-wide text-slate">Pago em</p>
             <p className="mt-1 text-lg text-sage">{formatDate(invoice.paidDate)}</p>
           </div>
         ) : (
           LANDLORD.pixKey && (
             <div>
-              <p className="font-mono text-[11px] uppercase tracking-widest text-slate">Chave PIX</p>
+              <p className="font-mono text-[11px] uppercase tracking-wide text-slate">Chave PIX</p>
               <p className="mt-1 text-lg">{LANDLORD.pixKey}</p>
             </div>
           )

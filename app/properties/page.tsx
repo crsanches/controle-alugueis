@@ -33,10 +33,10 @@ export default function PropertiesPage() {
     <div>
       <header className="mb-8 flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="font-mono text-xs uppercase tracking-widest text-slate">Imóveis</p>
-          <h1 className="font-display text-3xl">Imóveis cadastrados</h1>
+          <p className="text-xs font-medium uppercase tracking-wide text-accent">Imóveis</p>
+          <h1 className="font-display text-2xl">Imóveis cadastrados</h1>
         </div>
-        <Link href="/properties/new" className="bg-ink px-4 py-2 text-sm text-paper hover:opacity-90">
+        <Link href="/properties/new" className="rounded-md bg-accent px-4 py-2 text-sm text-white hover:opacity-90">
           + Novo imóvel
         </Link>
       </header>
@@ -61,7 +61,7 @@ export default function PropertiesPage() {
             {properties.map((p) => (
               <tr key={p.id}>
                 <td>
-                  <Link href={`/properties/${p.id}/edit`} className="hover:text-terracotta">
+                  <Link href={`/properties/${p.id}/edit`} className="hover:text-accent">
                     {p.name}
                   </Link>
                 </td>
