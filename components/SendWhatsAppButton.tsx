@@ -8,7 +8,7 @@ import type { Invoice, Contract, Tenant, Property } from '@/lib/types';
 import { ReceiptImageCard } from '@/components/ReceiptImageCard';
 import { formatCurrency, formatDate, formatMonth } from '@/lib/format';
 
-type Status = 'idle' | 'working' | 'copied' | 'downloaded' | 'error';
+type Status = 'idle' | 'working' | 'shared' | 'copied' | 'downloaded' | 'error';
 
 // Formata o telefone salvo (varia bastante no cadastro: "11-98765-4321", "11987654321", etc.)
 // para o formato que o wa.me espera: código do país + DDD + número, só dígitos.
@@ -19,12 +19,32 @@ function formatPhoneForWhatsApp(phone: string): string | null {
   return `55${digits}`;
 }
 
+// Detecta se o navegador suporta compartilhar ARQUIVOS via share sheet nativo
+// (iPhone/Android). Precisa ser checado com um File de verdade.
+function supportsFileShare(): boolean {
+  if (typeof navigator === 'undefined' || !navigator.canShare) return false;
+  try {
+    const probe = new File([''], 'probe.png', { type: 'image/png' });
+    return navigator.canShare({ files: [probe] });
+  } catch {
+    return false;
+  }
+}
+
 export function SendWhatsAppButton({ invoice, compact = false }: { invoice: Invoice; compact?: boolean }) {
   const [status, setStatus] = useState<Status>('idle');
   const [captureData, setCaptureData] = useState<{ tenant: Tenant | null; property: Property | null } | null>(null);
   const captureRef = useRef<HTMLDivElement>(null);
 
   async function handleClick() {
+    // ── Decisões SÍNCRONAS, ainda dentro do gesto do clique ────────────────
+    const useShareSheet = supportsFileShare();
+
+    // Desktop: abre a janela AGORA, vazia. O Safari/Chrome só permitem
+    // window.open síncrono; depois de qualquer await ele seria bloqueado
+    // como popup. A navegação de uma janela JÁ aberta é sempre permitida.
+    const waWindow = useShareSheet ? null : window.open('', '_blank');
+
     setStatus('working');
     try {
       const contractSnap = await getDoc(doc(db, 'contracts', invoice.contractId));
@@ -52,6 +72,46 @@ export function SendWhatsAppButton({ invoice, compact = false }: { invoice: Invo
       const blob = await toBlob(captureRef.current, { pixelRatio: 2 });
       if (!blob) throw new Error('Falha ao gerar a imagem.');
 
+      const phone = tenant ? formatPhoneForWhatsApp(tenant.phone) : null;
+      const message = [
+        `Olá ${invoice.tenantName.split(' ')[0]}, segue o recibo referente a ${formatMonth(invoice.referenceMonth)}.`,
+        `Valor: ${formatCurrency(invoice.totalAmount)}`,
+        `Vencimento: ${formatDate(invoice.dueDate)}`,
+      ].join('\n');
+      const waUrl = phone
+        ? `https://wa.me/${phone}?text=${encodeURIComponent(message)}`
+        : `https://wa.me/?text=${encodeURIComponent(message)}`;
+
+      // ── CAMINHO 1: celular (iPhone/Android) → share sheet nativo ─────────
+      if (useShareSheet) {
+        const file = new File([blob], `recibo-${invoice.id}.png`, { type: 'image/png' });
+        try {
+          await navigator.share({ files: [file] });
+          // no share sheet o usuário escolhe o WhatsApp e o contato;
+          // a imagem já vai anexada, sem precisar colar nada.
+          setStatus('shared');
+          setTimeout(() => setStatus('idle'), 5000);
+          return;
+        } catch (shareErr) {
+          // usuário fechou o sheet sem escolher app: não é erro, só desiste
+          if (shareErr instanceof DOMException && shareErr.name === 'AbortError') {
+            setStatus('idle');
+            return;
+          }
+          // NotAllowedError (gesto expirou) ou outro problema:
+          // cai pro plano B — baixa a imagem e abre o wa.me na MESMA aba
+          // (navegação da própria aba não sofre bloqueio de popup).
+          console.warn('Share sheet indisponível, usando fallback de download.', shareErr);
+          downloadBlob(blob);
+          setStatus('downloaded');
+          setTimeout(() => {
+            window.location.href = waUrl;
+          }, 800);
+          return;
+        }
+      }
+
+      // ── CAMINHO 2: desktop → clipboard + janela pré-aberta ────────────────
       let copied = false;
       try {
         await navigator.clipboard.write([new ClipboardItem({ [blob.type]: blob })]);
@@ -60,41 +120,42 @@ export function SendWhatsAppButton({ invoice, compact = false }: { invoice: Invo
         console.warn('Área de transferência indisponível, baixando a imagem em vez de copiar.', clipErr);
       }
 
-      if (!copied) {
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `recibo-${invoice.tenantName.trim().toLowerCase().replace(/\s+/g, '-')}-${invoice.id}.png`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
+      if (!copied) downloadBlob(blob);
+
+      if (waWindow && !waWindow.closed) {
+        waWindow.location.href = waUrl;
+      } else {
+        // janela foi bloqueada mesmo síncrona (raro) ou fechada pelo usuário:
+        // navega a aba atual como último recurso
+        window.location.href = waUrl;
       }
 
-      const phone = tenant ? formatPhoneForWhatsApp(tenant.phone) : null;
-      const message = [
-        `Olá ${invoice.tenantName.split(' ')[0]}, segue o recibo referente a ${formatMonth(invoice.referenceMonth)}.`,
-        `Valor: ${formatCurrency(invoice.totalAmount)}`,
-        `Vencimento: ${formatDate(invoice.dueDate)}`,
-      ].join('\n');
-
-      const waUrl = phone
-        ? `https://wa.me/${phone}?text=${encodeURIComponent(message)}`
-        : `https://wa.me/?text=${encodeURIComponent(message)}`;
-
-      window.open(waUrl, '_blank');
       setStatus(copied ? 'copied' : 'downloaded');
       setTimeout(() => setStatus('idle'), 5000);
     } catch (err) {
       console.error(err);
+      // não deixa a aba em branco órfã se algo deu errado no meio
+      waWindow?.close();
       setStatus('error');
       setTimeout(() => setStatus('idle'), 4000);
     }
   }
 
+  function downloadBlob(blob: Blob) {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `recibo-${invoice.tenantName.trim().toLowerCase().replace(/\s+/g, '-')}-${invoice.id}.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }
+
   const labels: Record<Status, string> = {
     idle: compact ? 'Zap' : 'Enviar por WhatsApp',
     working: 'Preparando...',
+    shared: compact ? 'Enviado!' : 'Recibo compartilhado',
     copied: compact ? 'Copiado!' : 'Imagem copiada — cole no WhatsApp (Ctrl+V)',
     downloaded: compact ? 'Baixado' : 'Imagem baixada — anexe no WhatsApp',
     error: 'Erro, tente de novo',

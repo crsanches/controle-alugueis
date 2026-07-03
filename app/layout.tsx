@@ -23,6 +23,10 @@ const plexMono = IBM_Plex_Mono({
 export const metadata: Metadata = {
   title: 'Controle de Aluguéis',
   description: 'Gestão de contratos, boletos e pagamentos de aluguel',
+  appleWebApp: {
+    title: 'Aluguéis',
+  },
+
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -37,3 +41,5 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   );
 }
+
+
