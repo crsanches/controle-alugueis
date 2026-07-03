@@ -40,7 +40,7 @@
 /* Escala global: no celular, tudo que é rem encolhe ~12% */
 @media (max-width: 640px) {
   html {
-    font-size: 14px; /* padrão é 16px; ajuste a gosto: 15px = mais sutil, 13px = bem compacto */
+    font-size: 12px; /* padrão é 16px; ajuste a gosto: 15px = mais sutil, 13px = bem compacto */
   }
 }
 
