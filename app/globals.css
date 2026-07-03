@@ -37,3 +37,17 @@
     @apply font-mono tabular-nums;
   }
 }
+/* Escala global: no celular, tudo que é rem encolhe ~12% */
+@media (max-width: 640px) {
+  html {
+    font-size: 14px; /* padrão é 16px; ajuste a gosto: 15px = mais sutil, 13px = bem compacto */
+  }
+}
+
+
+/* Evita o auto-zoom do Safari iOS ao focar campos de formulário */
+@media (max-width: 640px) {
+  input, select, textarea {
+    font-size: 16px;
+  }
+}
