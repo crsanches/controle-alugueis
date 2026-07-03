@@ -1,11 +1,11 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { collection, getDocs } from 'firebase/firestore';
 import { Timestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import type { Contract, Invoice, Property } from '@/lib/types';
-import { formatCurrency, formatMonth } from '@/lib/format';
+import { formatCurrency } from '@/lib/format';
 
 interface Row {
   invoiceId: string;
@@ -13,28 +13,50 @@ interface Row {
   tenantName: string;
   propertyName: string;
   referenceMonth: Timestamp | null;
+  receiptMonth: Date | null;
   collectionDate: Date | null;
   rentValue: number;
   refundFee: number;
   base: number;
 }
 
-interface CollectionGroup {
-  key: string; // "YYYY-MM"
-  label: string;
-  total: number;
-}
-
-// Mes de recolhimento: dois meses apos o mes de referencia, sempre dia 30
-// (dia 28 em fevereiro, ja que fevereiro nunca chega no dia 30).
-function computeCollectionDate(referenceMonth: Timestamp | null): Date | null {
+// Soma N meses ao mês de referência, mantendo o cálculo em UTC.
+function addMonthsToReference(referenceMonth: Timestamp | null, months: number): { year: number; month: number } | null {
   if (!referenceMonth) return null;
   const ref = referenceMonth.toDate();
-  const targetIndex = ref.getUTCMonth() + 2; // 0-based; +2 = dois meses depois
+  const targetIndex = ref.getUTCMonth() + months; // 0-based
   const year = ref.getUTCFullYear() + Math.floor(targetIndex / 12);
   const month = ((targetIndex % 12) + 12) % 12;
-  const day = month === 1 ? 28 : 30; // indice 1 = fevereiro
-  return new Date(Date.UTC(year, month, day));
+  return { year, month };
+}
+
+// Mês do recebimento: um mês após o mês de referência.
+function computeReceiptMonth(referenceMonth: Timestamp | null): Date | null {
+  const target = addMonthsToReference(referenceMonth, 1);
+  if (!target) return null;
+  return new Date(Date.UTC(target.year, target.month, 1));
+}
+
+// Mês de recolhimento: dois meses após o mês de referência, sempre dia 30
+// (dia 28 em fevereiro, já que fevereiro nunca chega no dia 30).
+function computeCollectionDate(referenceMonth: Timestamp | null): Date | null {
+  const target = addMonthsToReference(referenceMonth, 2);
+  if (!target) return null;
+  const day = target.month === 1 ? 28 : 30; // índice 1 = fevereiro
+  return new Date(Date.UTC(target.year, target.month, day));
+}
+
+// Formato curto de mês: "mai/26" (o toLocaleDateString gera "mai.", tiramos o ponto)
+function formatMonthShort(d: Date | null): string {
+  if (!d) return '—';
+  const month = d.toLocaleDateString('pt-BR', { month: 'short', timeZone: 'UTC' }).replace('.', '');
+  const year = d.toLocaleDateString('pt-BR', { year: '2-digit', timeZone: 'UTC' });
+  return `${month}/${year}`;
+}
+
+function formatTimestampMonthShort(ts: Timestamp | null): string {
+  if (!ts) return '—';
+  return formatMonthShort(ts.toDate());
 }
 
 export default function IRPage() {
@@ -60,7 +82,7 @@ export default function IRPage() {
         const invoices = invoicesSnap.docs.map((d) => ({ id: d.id, ...d.data() }) as Invoice);
 
         // todos os boletos PAGOS de contratos que recolhem IR — independente
-        // do contrato ainda estar ativo hoje, ja que isso e um historico do
+        // do contrato ainda estar ativo hoje, já que isso é um histórico do
         // que foi efetivamente recebido
         const computed = invoices
           .filter((inv) => inv.status === 'paid')
@@ -81,6 +103,7 @@ export default function IRPage() {
               tenantName: inv.tenantName,
               propertyName: inv.propertyName,
               referenceMonth: inv.referenceMonth,
+              receiptMonth: computeReceiptMonth(inv.referenceMonth),
               collectionDate: computeCollectionDate(inv.referenceMonth),
               rentValue,
               refundFee,
@@ -102,8 +125,6 @@ export default function IRPage() {
     load();
   }, []);
 
-  
-
   return (
     <div>
       <header className="mb-8">
@@ -116,11 +137,10 @@ export default function IRPage() {
 
       {!loading && !error && (
         <>
-          
-
           <p className="mb-4 text-xs text-slate">
-            Base de cálculo = valor do aluguel do boleto pago, deduzida a taxa de reembolso do imóvel. Mês para
-            recolhimento = mês de referência + 2 meses, sempre dia 30 (dia 28 em fevereiro).
+            Base de cálculo = valor do aluguel do boleto pago, deduzida a taxa de reembolso do imóvel. Mês do
+            recebimento = mês de referência + 1 mês. Mês para recolhimento = mês de referência + 2 meses, sempre dia
+            30 (dia 28 em fevereiro).
           </p>
 
           <div className="table-scroll">
@@ -129,8 +149,9 @@ export default function IRPage() {
                 <tr>
                   <th>Inquilino</th>
                   <th>Imóvel</th>
-                  <th>Mês de referência</th>
-                  <th>Mês para recolhimento</th>
+                  <th>Mês referência</th>
+                  <th>Mês recebimento</th>
+                  <th>Data para recolhimento</th>
                   <th>Aluguel</th>
                   <th>Dedução</th>
                   <th>Base de cálculo</th>
@@ -141,7 +162,8 @@ export default function IRPage() {
                   <tr key={r.invoiceId}>
                     <td>{r.tenantName}</td>
                     <td>{r.propertyName}</td>
-                    <td className="capitalize">{formatMonth(r.referenceMonth)}</td>
+                    <td>{formatTimestampMonthShort(r.referenceMonth)}</td>
+                    <td>{formatMonthShort(r.receiptMonth)}</td>
                     <td className="money capitalize">
                       {r.collectionDate
                         ? r.collectionDate.toLocaleDateString('pt-BR', { timeZone: 'UTC' })
