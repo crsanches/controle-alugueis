@@ -19,6 +19,15 @@ export default function ContractsPage() {
         const q = query(collection(db, 'contracts'), orderBy('endDate', 'asc'));
         const snapshot = await getDocs(q);
         const rows = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }) as Contract);
+
+        // ativos primeiro, inativos depois; dentro de cada grupo,
+        // ordenados pela data de fim do contrato (mais próxima primeiro)
+        rows.sort((a, b) => {
+          const rank = (c: Contract) => (c.status === 'active' ? 0 : c.status === 'inactive' ? 1 : 2);
+          if (rank(a) !== rank(b)) return rank(a) - rank(b);
+          return (a.endDate?.toMillis() ?? Infinity) - (b.endDate?.toMillis() ?? Infinity);
+        });
+
         setContracts(rows);
       } catch (err) {
         console.error(err);
@@ -52,7 +61,7 @@ export default function ContractsPage() {
             <tr>
               <th>Inquilino</th>
               <th>Imóvel</th>
-              <th>Vencimento</th>
+              <th>Dia para pagamento</th>
               <th>Valor atual</th>
               <th>Fim do contrato</th>
               <th>Status</th>

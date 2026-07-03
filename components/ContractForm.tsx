@@ -4,10 +4,77 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { addDoc, collection, deleteDoc, doc, getDocs, orderBy, query, updateDoc, where } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import type { Contract, HistoryEntry, Property, Tenant } from '@/lib/types';
+import type { AdjustmentEntry, Contract, HistoryEntry, Property, Tenant } from '@/lib/types';
 import { timestampToDateInput, dateInputToTimestamp, formatDate, formatCurrency } from '@/lib/format';
 import { inputClass, labelClass, primaryButtonClass, secondaryButtonClass, dangerLinkClass } from '@/lib/formStyles';
 import { CurrencyInput } from '@/components/CurrencyInput';
+
+const RENEWAL_MONTHS = 30;
+
+function addMonths(dateStr: string, months: number): string {
+  if (!dateStr) return '';
+  const d = new Date(`${dateStr}T00:00:00.000Z`);
+  d.setUTCMonth(d.getUTCMonth() + months);
+  return d.toISOString().slice(0, 10);
+}
+
+function formatInputDate(dateStr: string): string {
+  if (!dateStr) return '—';
+  return new Date(`${dateStr}T00:00:00.000Z`).toLocaleDateString('pt-BR', { timeZone: 'UTC' });
+}
+
+function ordinalPtBr(n: number): string {
+  const names = [
+    'Primeira', 'Segunda', 'Terceira', 'Quarta', 'Quinta',
+    'Sexta', 'Sétima', 'Oitava', 'Nona', 'Décima',
+  ];
+  return names[n - 1] ?? `${n}ª`;
+}
+
+interface TimelineRow {
+  title: string;
+  detail: string;
+}
+
+/**
+ * Deduz a linha do tempo de renovações a partir do início e do fim do
+ * contrato, assumindo ciclos fixos de 30 meses. Não depende da coleção
+ * `history` — o log lá é apenas informativo.
+ */
+function buildTimeline(startDate: string, endDate: string) {
+  const rows: TimelineRow[] = [];
+  if (!startDate) return { rows, aligned: true, renewals: 0 };
+
+  const firstDue = addMonths(startDate, RENEWAL_MONTHS);
+  rows.push({
+    title: 'Contrato inicial',
+    detail: `${formatInputDate(startDate)} — 1º vencimento: ${formatInputDate(firstDue)}`,
+  });
+
+  let cursor = firstDue;
+  let renewals = 0;
+
+  if (endDate) {
+    // Cada renovação acontece na data do vencimento anterior e empurra o fim
+    // do contrato +30 meses. Strings ISO (yyyy-mm-dd) comparam corretamente.
+    while (renewals < 40) {
+      const next = addMonths(cursor, RENEWAL_MONTHS);
+      if (next <= endDate) {
+        renewals += 1;
+        rows.push({
+          title: `${ordinalPtBr(renewals)} renovação — ${formatInputDate(cursor)}`,
+          detail: `Próximo vencimento: ${formatInputDate(next)}`,
+        });
+        cursor = next;
+      } else {
+        break;
+      }
+    }
+  }
+
+  const aligned = !endDate || endDate === cursor;
+  return { rows, aligned, renewals };
+}
 
 export function ContractForm({ contract }: { contract?: Contract }) {
   const router = useRouter();
@@ -34,59 +101,107 @@ export function ContractForm({ contract }: { contract?: Contract }) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // reajustes adicionados nesta sessão de edição, ainda não salvos
+  // ─── Reajustes ────────────────────────────────────────────────────────────
+  // Existentes agora vivem em estado para permitir exclusão (persistida ao Salvar)
+  const [existingAdjustments, setExistingAdjustments] = useState<AdjustmentEntry[]>(
+    contract?.adjustmentHistory ?? []
+  );
   const [pendingAdjustments, setPendingAdjustments] = useState<{ date: string; value: string }[]>([]);
   const [newAdjustmentDate, setNewAdjustmentDate] = useState(new Date().toISOString().slice(0, 10));
   const [newAdjustmentValue, setNewAdjustmentValue] = useState('0');
 
-  const existingAdjustments = contract?.adjustmentHistory ?? [];
+  /**
+   * O "Valor atual do aluguel" é sempre o valor do reajuste com a DATA MAIS
+   * RECENTE entre existentes + pendentes. Recalculado a cada inclusão/exclusão.
+   */
+  function latestAdjustmentValue(
+    existing: AdjustmentEntry[],
+    pending: { date: string; value: string }[]
+  ): string | null {
+    const all = [
+      ...existing.map((a) => ({ ms: a.date?.toMillis() ?? 0, value: String(a.value) })),
+      ...pending.map((a) => ({ ms: new Date(`${a.date}T00:00:00.000Z`).getTime(), value: a.value })),
+    ];
+    if (all.length === 0) return null;
+    all.sort((x, y) => y.ms - x.ms);
+    return all[0].value;
+  }
+
+  function syncCurrentRent(
+    existing: AdjustmentEntry[],
+    pending: { date: string; value: string }[]
+  ) {
+    const latest = latestAdjustmentValue(existing, pending);
+    if (latest !== null) {
+      update('currentRentValue', latest);
+    } else {
+      // sem nenhum reajuste, o valor atual volta a ser o valor original
+      update('currentRentValue', form.rentValue);
+    }
+  }
 
   function handleAddAdjustment() {
     const value = parseFloat(newAdjustmentValue) || 0;
     if (!newAdjustmentDate || value <= 0) return;
 
-    setPendingAdjustments((list) => [...list, { date: newAdjustmentDate, value: newAdjustmentValue }]);
-
-    // se esse for o reajuste mais recente até agora, já atualiza o valor
-    // atual do aluguel automaticamente (dá pra ajustar na mão depois)
-    const allDates = [
-      ...existingAdjustments.map((a) => a.date?.toDate().getTime() ?? 0),
-      ...pendingAdjustments.map((a) => new Date(a.date).getTime()),
-    ];
-    const newDateMs = new Date(newAdjustmentDate).getTime();
-    if (allDates.length === 0 || newDateMs >= Math.max(...allDates)) {
-      update('currentRentValue', newAdjustmentValue);
-    }
+    const nextPending = [...pendingAdjustments, { date: newAdjustmentDate, value: newAdjustmentValue }];
+    setPendingAdjustments(nextPending);
+    syncCurrentRent(existingAdjustments, nextPending);
 
     setNewAdjustmentDate(new Date().toISOString().slice(0, 10));
     setNewAdjustmentValue('0');
   }
 
   function handleRemovePendingAdjustment(index: number) {
-    setPendingAdjustments((list) => list.filter((_, i) => i !== index));
+    const nextPending = pendingAdjustments.filter((_, i) => i !== index);
+    setPendingAdjustments(nextPending);
+    syncCurrentRent(existingAdjustments, nextPending);
   }
 
-  // --- renovação (sempre por 30 meses) ---
+  function handleRemoveExistingAdjustment(index: number) {
+    if (!confirm('Excluir este reajuste do histórico? A exclusão é gravada ao clicar em "Salvar".')) return;
+    const nextExisting = existingAdjustments.filter((_, i) => i !== index);
+    setExistingAdjustments(nextExisting);
+    syncCurrentRent(nextExisting, pendingAdjustments);
+  }
+
+  // ─── Renovações (ciclo fixo de 30 meses) ─────────────────────────────────
   const [renewalHistory, setRenewalHistory] = useState<HistoryEntry[]>([]);
-  const [renewalDateOverride, setRenewalDateOverride] = useState('');
+  const [earlyEndDate, setEarlyEndDate] = useState('');
 
-  function addMonths(dateStr: string, months: number): string {
-    if (!dateStr) return '';
-    const d = new Date(`${dateStr}T00:00:00.000Z`);
-    d.setUTCMonth(d.getUTCMonth() + months);
-    return d.toISOString().slice(0, 10);
+  const timeline = buildTimeline(form.startDate, form.endDate);
+  const firstDue = form.startDate ? addMonths(form.startDate, RENEWAL_MONTHS) : '';
+
+  function handleRegisterRenewal() {
+    // renovação padrão: empurra o fim do contrato +30 meses a partir do fim atual
+    const base = form.endDate || firstDue;
+    if (!base) return;
+    update('endDate', addMonths(base, RENEWAL_MONTHS));
   }
 
-  const suggestedRenewalDate = addMonths(form.endDate, 30);
-  const renewalDateValue = renewalDateOverride || suggestedRenewalDate;
+  function handleUndoLastRenewal() {
+    if (!timeline.aligned || timeline.renewals === 0) return;
+    update('endDate', addMonths(form.endDate, -RENEWAL_MONTHS));
+  }
 
-  function handleApplyRenewal() {
-    if (!renewalDateValue) return;
-    update('endDate', renewalDateValue);
-    setRenewalDateOverride('');
+  function handleApplyEarlyEnd() {
+    if (!earlyEndDate) return;
+    update('endDate', earlyEndDate);
+    setEarlyEndDate('');
   }
 
   const renewalPending = isEditing && contract && form.endDate !== timestampToDateInput(contract.endDate);
+
+  async function handleDeleteRenewalEntry(entry: HistoryEntry) {
+    if (!confirm(`Excluir do histórico o registro de renovação de ${formatDate(entry.date)}? Essa ação é imediata e não pode ser desfeita.`)) return;
+    try {
+      await deleteDoc(doc(db, 'history', entry.id));
+      setRenewalHistory((list) => list.filter((h) => h.id !== entry.id));
+    } catch (err) {
+      console.error(err);
+      setError('Não foi possível excluir o registro do histórico.');
+    }
+  }
 
   useEffect(() => {
     async function loadOptions() {
@@ -153,16 +268,17 @@ export function ContractForm({ contract }: { contract?: Contract }) {
         collectsIncomeTax: form.collectsIncomeTax,
         collectsIptu: form.collectsIptu,
         status: form.status,
+        // existentes (já sem os excluídos nesta sessão) + novos
         adjustmentHistory: [...existingAdjustments, ...newAdjustmentEntries],
       };
 
       if (isEditing && contract) {
         await updateDoc(doc(db, 'contracts', contract.id), payload);
 
-        // registra automaticamente uma "renovação" no histórico quando o
-        // fim do contrato é estendido para uma data mais distante
         const previousEndDate = contract.endDate?.toDate();
         const newEndDate = payload.endDate?.toDate();
+
+        // fim estendido → registra renovação no histórico
         if (previousEndDate && newEndDate && newEndDate.getTime() > previousEndDate.getTime()) {
           await addDoc(collection(db, 'history'), {
             contractId: contract.id,
@@ -171,6 +287,18 @@ export function ContractForm({ contract }: { contract?: Contract }) {
             date: payload.endDate,
             type: 'renewal',
             note: `Contrato renovado. Novo vencimento: ${formatDate(payload.endDate)} (anterior: ${formatDate(contract.endDate)}).`,
+          });
+        }
+
+        // fim antecipado/cancelado → registra também, como nota geral
+        if (previousEndDate && newEndDate && newEndDate.getTime() < previousEndDate.getTime()) {
+          await addDoc(collection(db, 'history'), {
+            contractId: contract.id,
+            tenantName: tenant.name,
+            propertyName: property.name,
+            date: payload.endDate,
+            type: 'general',
+            note: `Vencimento antecipado/cancelado. Novo fim: ${formatDate(payload.endDate)} (anterior: ${formatDate(contract.endDate)}).`,
           });
         }
 
@@ -213,6 +341,12 @@ export function ContractForm({ contract }: { contract?: Contract }) {
   }
 
   if (loadingOptions) return <p className="text-slate">Carregando...</p>;
+
+  // reajustes existentes ordenados por data desc, preservando o índice real
+  // do array para permitir a exclusão correta
+  const sortedExistingAdjustments = existingAdjustments
+    .map((a, originalIndex) => ({ a, originalIndex }))
+    .sort((x, y) => (y.a.date?.toMillis() ?? 0) - (x.a.date?.toMillis() ?? 0));
 
   return (
     <form onSubmit={handleSubmit} className="max-w-2xl space-y-5">
@@ -266,52 +400,107 @@ export function ContractForm({ contract }: { contract?: Contract }) {
 
       {isEditing && (
         <div className="rounded-md border border-hairline bg-paperDim/40 p-4">
-          <p className={labelClass}>Histórico de renovações</p>
+          <p className={labelClass}>Renovações — ciclo de {RENEWAL_MONTHS} meses</p>
 
-          {renewalHistory.length === 0 && !renewalPending && (
-            <p className="mt-2 text-sm text-slate">Nenhuma renovação registrada ainda.</p>
-          )}
-
-          {renewalHistory.length > 0 && (
+          {/* Linha do tempo calculada a partir de Início + Fim do contrato */}
+          {timeline.rows.length > 0 && (
             <ul className="mt-2 space-y-1 text-sm">
-              {renewalHistory.map((h) => (
-                <li key={h.id} className="flex justify-between border-b border-hairline/70 py-1.5">
-                  <span>{formatDate(h.date)}</span>
-                  <span className="text-slate">novo vencimento registrado</span>
+              {timeline.rows.map((row, i) => (
+                <li key={i} className="flex flex-wrap justify-between gap-x-4 border-b border-hairline/70 py-1.5">
+                  <span>{row.title}</span>
+                  <span className="text-slate">{row.detail}</span>
                 </li>
               ))}
             </ul>
           )}
 
-          {renewalPending && (
-            <p className="mt-2 rounded-md bg-sage/10 px-3 py-2 text-sm text-sage">
-              Renovação pendente: vencimento alterado para {formatDate(dateInputToTimestamp(form.endDate))} — será
-              registrada no Histórico ao salvar.
+          {!timeline.aligned && form.endDate && (
+            <p className="mt-2 rounded-md bg-rust/10 px-3 py-2 text-sm text-rust">
+              Vencimento atual fora do ciclo de {RENEWAL_MONTHS} meses (antecipação ou cancelamento):{' '}
+              {formatInputDate(form.endDate)}
             </p>
           )}
 
+          {renewalPending && (
+            <p className="mt-2 rounded-md bg-sage/10 px-3 py-2 text-sm text-sage">
+              Alteração pendente: vencimento passa a {formatDate(dateInputToTimestamp(form.endDate))} — será gravada
+              ao clicar em "Salvar".
+            </p>
+          )}
+
+          <div className="mt-4 flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={handleRegisterRenewal}
+              className="border border-ink px-4 py-2 text-sm text-ink hover:bg-ink hover:text-paper"
+            >
+              + Registrar novo vencimento (+{RENEWAL_MONTHS} meses)
+            </button>
+            {timeline.aligned && timeline.renewals > 0 && (
+              <button
+                type="button"
+                onClick={handleUndoLastRenewal}
+                className={dangerLinkClass}
+              >
+                Desfazer última renovação
+              </button>
+            )}
+          </div>
+
           <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end">
             <div>
-              <label className={labelClass}>Novo vencimento (sugestão: +30 meses)</label>
+              <label className={labelClass}>Informe o novo vencimento caso seja antecipado ou cancelado</label>
               <input
                 type="date"
                 className={inputClass}
-                value={renewalDateValue}
-                onChange={(e) => setRenewalDateOverride(e.target.value)}
+                value={earlyEndDate}
+                onChange={(e) => setEarlyEndDate(e.target.value)}
               />
             </div>
             <button
               type="button"
-              onClick={handleApplyRenewal}
-              className="border border-ink px-4 py-2 text-sm text-ink hover:bg-ink hover:text-paper"
+              onClick={handleApplyEarlyEnd}
+              disabled={!earlyEndDate}
+              className="border border-ink px-4 py-2 text-sm text-ink hover:bg-ink hover:text-paper disabled:opacity-40"
             >
-              + Registrar renovação
+              Aplicar
             </button>
           </div>
+
           <p className="mt-2 text-xs text-slate">
-            Isso atualiza o campo "Fim do contrato" acima. A renovação fica salva no Histórico assim que você clicar
-            em "Salvar" no final do formulário.
+            A linha do tempo acima é calculada automaticamente a partir do início e do fim do contrato (ciclos de{' '}
+            {RENEWAL_MONTHS} meses). As alterações no vencimento são gravadas ao clicar em "Salvar" no final do
+            formulário.
           </p>
+
+          {/* Registros gravados na coleção history — apenas informativos, com exclusão */}
+          {renewalHistory.length > 0 && (
+            <div className="mt-4">
+              <p className="text-xs font-medium uppercase tracking-wide text-slate">
+                Registros de renovação no Histórico
+              </p>
+              <ul className="mt-1 space-y-1 text-sm">
+                {renewalHistory.map((h) => (
+                  <li key={h.id} className="flex items-center justify-between border-b border-hairline/70 py-1.5">
+                    <span>{formatDate(h.date)}</span>
+                    <span className="flex items-center gap-3">
+                      <span className="text-slate">novo vencimento registrado</span>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteRenewalEntry(h)}
+                        className="text-xs text-rust hover:underline"
+                      >
+                        excluir
+                      </button>
+                    </span>
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-1 text-xs text-slate">
+                Estes registros são apenas informativos — excluir um deles não altera o fim do contrato.
+              </p>
+            </div>
+          )}
         </div>
       )}
 
@@ -379,15 +568,21 @@ export function ContractForm({ contract }: { contract?: Contract }) {
 
           {(existingAdjustments.length > 0 || pendingAdjustments.length > 0) && (
             <ul className="mt-2 space-y-1 text-sm">
-              {existingAdjustments
-                .slice()
-                .sort((a, b) => (b.date?.toMillis() ?? 0) - (a.date?.toMillis() ?? 0))
-                .map((a, i) => (
-                  <li key={`existing-${i}`} className="flex justify-between border-b border-hairline/70 py-1.5">
-                    <span>{formatDate(a.date)}</span>
+              {sortedExistingAdjustments.map(({ a, originalIndex }) => (
+                <li key={`existing-${originalIndex}`} className="flex items-center justify-between border-b border-hairline/70 py-1.5">
+                  <span>{formatDate(a.date)}</span>
+                  <span className="flex items-center gap-3">
                     <span className="money">{formatCurrency(a.value)}</span>
-                  </li>
-                ))}
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveExistingAdjustment(originalIndex)}
+                      className="text-xs text-rust hover:underline"
+                    >
+                      excluir
+                    </button>
+                  </span>
+                </li>
+              ))}
               {pendingAdjustments.map((a, i) => (
                 <li
                   key={`pending-${i}`}
@@ -432,8 +627,8 @@ export function ContractForm({ contract }: { contract?: Contract }) {
             </button>
           </div>
           <p className="mt-2 text-xs text-slate">
-            Registrar aqui atualiza o "Valor atual do aluguel" acima (se for o reajuste mais recente) e fica salvo no
-            Histórico assim que você clicar em "Salvar" no final do formulário.
+            O "Valor atual do aluguel" acima acompanha sempre o reajuste de data mais recente. Inclusões e exclusões
+            são gravadas ao clicar em "Salvar" no final do formulário.
           </p>
         </div>
       )}
