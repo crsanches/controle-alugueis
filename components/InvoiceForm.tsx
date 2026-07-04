@@ -9,6 +9,28 @@ import { formatCurrency, monthInputToTimestamp, timestampToMonthInput, timestamp
 import { inputClass, labelClass, primaryButtonClass, secondaryButtonClass, dangerLinkClass } from '@/lib/formStyles';
 import { CurrencyInput } from '@/components/CurrencyInput';
 
+/**
+ * Valor do aluguel vigente no mês de referência (YYYY-MM), percorrendo o
+ * histórico de reajustes do contrato: vale o reajuste de data mais recente
+ * com data <= mês de referência. Sem nenhum reajuste aplicável ao período,
+ * vale o valor original do contrato; sem histórico algum, o valor atual.
+ *
+ * REGRA DE OURO: boleto pago é histórico e nunca é re-carimbado a partir do
+ * contrato — esta função só é usada para boletos novos ou ainda pendentes.
+ */
+function rentForReferenceMonth(contract: Contract, referenceMonth: string): number {
+  const history = contract.adjustmentHistory ?? [];
+  if (!referenceMonth || history.length === 0) {
+    return contract.currentRentValue || contract.rentValue || 0;
+  }
+  const toYm = (d: Date) =>
+    `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}`;
+  const applicable = history
+    .filter((a) => a.date && toYm(a.date.toDate()) <= referenceMonth)
+    .sort((x, y) => (y.date?.toMillis() ?? 0) - (x.date?.toMillis() ?? 0));
+  return applicable[0]?.value ?? contract.rentValue ?? 0;
+}
+
 export function InvoiceForm({ invoice }: { invoice?: Invoice }) {
   const router = useRouter();
   const isEditing = Boolean(invoice);
@@ -23,9 +45,8 @@ export function InvoiceForm({ invoice }: { invoice?: Invoice }) {
     dueDay: String(invoice?.dueDay ?? ''),
     // usa o valor ATUAL do aluguel (currentRentAmount), nao o original/
     // congelado (rentAmount) — mesmo campo problemático dos boletos
-    // migrados do sistema antigo. Vale tanto pra boletos pagos quanto
-    // pendentes; pendentes ainda recebem um refresh abaixo com o valor
-    // mais recente do contrato.
+    // migrados do sistema antigo. Boletos pendentes recebem um refresh
+    // abaixo com o valor vigente no SEU mês de referência.
     rentAmount: String(invoice?.currentRentAmount || invoice?.rentAmount || 0),
     iptuAmount: String(invoice?.iptuAmount ?? 0),
     extraFeeAmount: String(invoice?.extraFeeAmount ?? 0),
@@ -51,16 +72,16 @@ export function InvoiceForm({ invoice }: { invoice?: Invoice }) {
       setProperties(propertiesSnap.docs.map((d) => ({ id: d.id, ...d.data() }) as Property));
       setLoadingOptions(false);
 
-      // Boletos migrados do sistema antigo tinham dois campos de aluguel
-      // separados ("valorAluguel" e "valorAtualContrato") que podiam ficar
-      // dessincronizados. Para boletos ainda não pagos, usamos sempre o
-      // valor atual do contrato, que é a fonte confiável — evita marcar
-      // como pago um valor desatualizado.
+      // Para boletos ainda não pagos, o valor do aluguel exibido é o valor
+      // vigente no MÊS DE REFERÊNCIA do boleto (via histórico de reajustes),
+      // e não o valor atual do contrato — um boleto pendente de mês
+      // retroativo deve receber o valor da época, não o de hoje.
+      // Boletos PAGOS nunca são atualizados: o valor deles é histórico.
       if (isEditing && invoice && invoice.status !== 'paid') {
         const contract = loadedContracts.find((c) => c.id === invoice.contractId);
         if (contract) {
-          const currentRent = contract.currentRentValue || contract.rentValue || 0;
-          setForm((f) => ({ ...f, rentAmount: String(currentRent) }));
+          const refMonth = timestampToMonthInput(invoice.referenceMonth);
+          setForm((f) => ({ ...f, rentAmount: String(rentForReferenceMonth(contract, refMonth)) }));
         }
       }
     }
@@ -96,13 +117,31 @@ export function InvoiceForm({ invoice }: { invoice?: Invoice }) {
       ...f,
       contractId,
       dueDay: String(contract.dueDay ?? ''),
-      rentAmount: String(contract.currentRentValue || contract.rentValue || 0),
+      // valor vigente no mês de referência do boleto (se já preenchido);
+      // boleto retroativo nasce com o valor da época, não o de hoje
+      rentAmount: String(rentForReferenceMonth(contract, f.referenceMonth)),
       iptuAmount: contract.collectsIptu ? String(property?.monthlyIptu ?? 0) : '0',
       insuranceAmount: String(property?.monthlyInsurance ?? 0),
       condoFeeAmount: String(property?.condoFee ?? 0),
       refundAmount: String(property?.refundFee ?? 0),
       // condoAmount (condomínio do mês) não é preenchido automaticamente —
       // varia todo mês, então precisa ser digitado a cada boleto.
+    }));
+  }
+
+  // Num boleto novo, mudar o mês de referência re-sincroniza o aluguel com
+  // o valor vigente naquele mês. Ao editar, o valor não é mexido — quem
+  // manda é o refresh do loadOptions (pendente) ou o valor gravado (pago).
+  function handleReferenceMonthChange(referenceMonth: string) {
+    if (isEditing) {
+      update('referenceMonth', referenceMonth);
+      return;
+    }
+    const contract = contracts.find((c) => c.id === form.contractId);
+    setForm((f) => ({
+      ...f,
+      referenceMonth,
+      rentAmount: contract ? String(rentForReferenceMonth(contract, referenceMonth)) : f.rentAmount,
     }));
   }
 
@@ -152,7 +191,15 @@ export function InvoiceForm({ invoice }: { invoice?: Invoice }) {
               )
             : null,
         rentAmount: parseFloat(form.rentAmount) || 0,
-        currentRentAmount: contract.currentRentValue || 0,
+        // BLINDAGEM: nunca carimbar contract.currentRentValue aqui.
+        // - Boleto PAGO: preserva o valor do formulário (histórico; só muda
+        //   se você editar o campo Aluguel de propósito).
+        // - Boleto novo/pendente: valor vigente no mês de referência,
+        //   derivado do histórico de reajustes do contrato.
+        currentRentAmount:
+          isEditing && invoice?.status === 'paid'
+            ? parseFloat(form.rentAmount) || 0
+            : rentForReferenceMonth(contract, form.referenceMonth),
         iptuAmount: parseFloat(form.iptuAmount) || 0,
         extraFeeAmount: parseFloat(form.extraFeeAmount) || 0,
         insuranceAmount: parseFloat(form.insuranceAmount) || 0,
@@ -223,7 +270,12 @@ export function InvoiceForm({ invoice }: { invoice?: Invoice }) {
         )}
         {isEditing && invoice?.status !== 'paid' && (
           <p className="mt-1 text-xs text-slate">
-            O valor do aluguel abaixo foi atualizado para o valor atual do contrato.
+            O valor do aluguel abaixo foi atualizado para o valor vigente no mês de referência do boleto.
+          </p>
+        )}
+        {isEditing && invoice?.status === 'paid' && (
+          <p className="mt-1 text-xs text-slate">
+            Boleto pago: os valores gravados são preservados e não acompanham reajustes do contrato.
           </p>
         )}
       </div>
@@ -235,7 +287,7 @@ export function InvoiceForm({ invoice }: { invoice?: Invoice }) {
             type="month"
             className={inputClass}
             value={form.referenceMonth}
-            onChange={(e) => update('referenceMonth', e.target.value)}
+            onChange={(e) => handleReferenceMonthChange(e.target.value)}
             required
           />
         </div>
