@@ -1,0 +1,1754 @@
+[
+  {
+    "id": "70",
+    "contractId": "1",
+    "tenantName": "Alexander Coelho",
+    "referenceMonth": "2022-01",
+    "rentAmount": 5080,
+    "currentRentAmount": 5080
+  },
+  {
+    "id": "75",
+    "contractId": "1",
+    "tenantName": "Alexander Coelho",
+    "referenceMonth": "2022-02",
+    "rentAmount": 5080,
+    "currentRentAmount": 5080
+  },
+  {
+    "id": "80",
+    "contractId": "1",
+    "tenantName": "Alexander Coelho",
+    "referenceMonth": "2022-03",
+    "rentAmount": 5080,
+    "currentRentAmount": 5080
+  },
+  {
+    "id": "86",
+    "contractId": "1",
+    "tenantName": "Alexander Coelho",
+    "referenceMonth": "2022-04",
+    "rentAmount": 5080,
+    "currentRentAmount": 5080
+  },
+  {
+    "id": "91",
+    "contractId": "1",
+    "tenantName": "Alexander Coelho",
+    "referenceMonth": "2022-05",
+    "rentAmount": 5080,
+    "currentRentAmount": 5080
+  },
+  {
+    "id": "95",
+    "contractId": "1",
+    "tenantName": "Alexander Coelho",
+    "referenceMonth": "2022-06",
+    "rentAmount": 5080,
+    "currentRentAmount": 5080
+  },
+  {
+    "id": "43",
+    "contractId": "1",
+    "tenantName": "Alexander Coelho",
+    "referenceMonth": "2022-11",
+    "rentAmount": 4800,
+    "currentRentAmount": 4800
+  },
+  {
+    "id": "66",
+    "contractId": "1",
+    "tenantName": "Alexander Coelho",
+    "referenceMonth": "2022-12",
+    "rentAmount": 5080,
+    "currentRentAmount": 5080
+  },
+  {
+    "id": "102",
+    "contractId": "1",
+    "tenantName": "Alexander Coelho",
+    "referenceMonth": "2023-07",
+    "rentAmount": 5080,
+    "currentRentAmount": 5080
+  },
+  {
+    "id": "107",
+    "contractId": "1",
+    "tenantName": "Alexander Coelho",
+    "referenceMonth": "2023-08",
+    "rentAmount": 5080,
+    "currentRentAmount": 5080
+  },
+  {
+    "id": "113",
+    "contractId": "1",
+    "tenantName": "Alexander Coelho",
+    "referenceMonth": "2023-09",
+    "rentAmount": 5080,
+    "currentRentAmount": 5080
+  },
+  {
+    "id": "118",
+    "contractId": "1",
+    "tenantName": "Alexander Coelho",
+    "referenceMonth": "2023-10",
+    "rentAmount": 5080,
+    "currentRentAmount": 5080
+  },
+  {
+    "id": "123",
+    "contractId": "1",
+    "tenantName": "Alexander Coelho",
+    "referenceMonth": "2023-11",
+    "rentAmount": 5080,
+    "currentRentAmount": 5080
+  },
+  {
+    "id": "134",
+    "contractId": "1",
+    "tenantName": "Alexander Coelho",
+    "referenceMonth": "2023-12",
+    "rentAmount": 5080,
+    "currentRentAmount": 5080
+  },
+  {
+    "id": "162",
+    "contractId": "1",
+    "tenantName": "Alexander Coelho",
+    "referenceMonth": "2024-01",
+    "rentAmount": 5080,
+    "currentRentAmount": 5080
+  },
+  {
+    "id": "175",
+    "contractId": "1",
+    "tenantName": "Alexander Coelho",
+    "referenceMonth": "2024-02",
+    "rentAmount": 5080,
+    "currentRentAmount": 5080
+  },
+  {
+    "id": "194",
+    "contractId": "1",
+    "tenantName": "Alexander Coelho",
+    "referenceMonth": "2024-03",
+    "rentAmount": 5080,
+    "currentRentAmount": 5080
+  },
+  {
+    "id": "200",
+    "contractId": "1",
+    "tenantName": "Alexander Coelho",
+    "referenceMonth": "2024-04",
+    "rentAmount": 5080,
+    "currentRentAmount": 5080
+  },
+  {
+    "id": "204",
+    "contractId": "1",
+    "tenantName": "Alexander Coelho",
+    "referenceMonth": "2024-05",
+    "rentAmount": 5080,
+    "currentRentAmount": 5080
+  },
+  {
+    "id": "209",
+    "contractId": "1",
+    "tenantName": "Alexander Coelho",
+    "referenceMonth": "2024-06",
+    "rentAmount": 5200,
+    "currentRentAmount": 5200
+  },
+  {
+    "id": "228",
+    "contractId": "1",
+    "tenantName": "Alexander Coelho",
+    "referenceMonth": "2024-07",
+    "rentAmount": 5200,
+    "currentRentAmount": 5200
+  },
+  {
+    "id": "232",
+    "contractId": "1",
+    "tenantName": "Alexander Coelho",
+    "referenceMonth": "2024-08",
+    "rentAmount": 5200,
+    "currentRentAmount": 5200
+  },
+  {
+    "id": "238",
+    "contractId": "1",
+    "tenantName": "Alexander Coelho",
+    "referenceMonth": "2024-09",
+    "rentAmount": 5200,
+    "currentRentAmount": 5200
+  },
+  {
+    "id": "247",
+    "contractId": "1",
+    "tenantName": "Alexander Coelho",
+    "referenceMonth": "2024-10",
+    "rentAmount": 5200,
+    "currentRentAmount": 5200
+  },
+  {
+    "id": "254",
+    "contractId": "1",
+    "tenantName": "Alexander Coelho",
+    "referenceMonth": "2024-11",
+    "rentAmount": 5200,
+    "currentRentAmount": 5200
+  },
+  {
+    "id": "289",
+    "contractId": "1",
+    "tenantName": "Alexander Coelho",
+    "referenceMonth": "2024-12",
+    "rentAmount": 5080,
+    "currentRentAmount": 5200
+  },
+  {
+    "id": "297",
+    "contractId": "1",
+    "tenantName": "Alexander Coelho",
+    "referenceMonth": "2025-01",
+    "rentAmount": 5080,
+    "currentRentAmount": 5200
+  },
+  {
+    "id": "311",
+    "contractId": "1",
+    "tenantName": "Alexander Coelho",
+    "referenceMonth": "2025-02",
+    "rentAmount": 5080,
+    "currentRentAmount": 5200
+  },
+  {
+    "id": "329",
+    "contractId": "1",
+    "tenantName": "Alexander Coelho",
+    "referenceMonth": "2025-03",
+    "rentAmount": 5080,
+    "currentRentAmount": 5200
+  },
+  {
+    "id": "337",
+    "contractId": "1",
+    "tenantName": "Alexander Coelho",
+    "referenceMonth": "2025-04",
+    "rentAmount": 5080,
+    "currentRentAmount": 5200
+  },
+  {
+    "id": "342",
+    "contractId": "1",
+    "tenantName": "Alexander Coelho",
+    "referenceMonth": "2025-05",
+    "rentAmount": 5080,
+    "currentRentAmount": 5200
+  },
+  {
+    "id": "346",
+    "contractId": "1",
+    "tenantName": "Alexander Coelho",
+    "referenceMonth": "2025-06",
+    "rentAmount": 5080,
+    "currentRentAmount": 5565.36
+  },
+  {
+    "id": "350",
+    "contractId": "1",
+    "tenantName": "Alexander Coelho",
+    "referenceMonth": "2025-07",
+    "rentAmount": 5080,
+    "currentRentAmount": 5565.36
+  },
+  {
+    "id": "356",
+    "contractId": "1",
+    "tenantName": "Alexander Coelho",
+    "referenceMonth": "2025-08",
+    "rentAmount": 5080,
+    "currentRentAmount": 5565.36
+  },
+  {
+    "id": "363",
+    "contractId": "1",
+    "tenantName": "Alexander Coelho",
+    "referenceMonth": "2025-09",
+    "rentAmount": 5080,
+    "currentRentAmount": 5565.36
+  },
+  {
+    "id": "367",
+    "contractId": "1",
+    "tenantName": "Alexander Coelho",
+    "referenceMonth": "2025-10",
+    "rentAmount": 5080,
+    "currentRentAmount": 5565.36
+  },
+  {
+    "id": "370",
+    "contractId": "1",
+    "tenantName": "Alexander Coelho",
+    "referenceMonth": "2025-11",
+    "rentAmount": 5080,
+    "currentRentAmount": 5565.36
+  },
+  {
+    "id": "378",
+    "contractId": "1",
+    "tenantName": "Alexander Coelho",
+    "referenceMonth": "2025-12",
+    "rentAmount": 5080,
+    "currentRentAmount": 5565.36
+  },
+  {
+    "id": "382",
+    "contractId": "1",
+    "tenantName": "Alexander Coelho",
+    "referenceMonth": "2026-01",
+    "rentAmount": 5080,
+    "currentRentAmount": 5565.36
+  },
+  {
+    "id": "385",
+    "contractId": "1",
+    "tenantName": "Alexander Coelho",
+    "referenceMonth": "2026-02",
+    "rentAmount": 0,
+    "currentRentAmount": 0
+  },
+  {
+    "id": "390",
+    "contractId": "1",
+    "tenantName": "Alexander Coelho",
+    "referenceMonth": "2026-02",
+    "rentAmount": 5080,
+    "currentRentAmount": 5565.36
+  },
+  {
+    "id": "394",
+    "contractId": "1",
+    "tenantName": "Alexander Coelho",
+    "referenceMonth": "2026-03",
+    "rentAmount": 5080,
+    "currentRentAmount": 5565.36
+  },
+  {
+    "id": "401",
+    "contractId": "1",
+    "tenantName": "Alexander Coelho",
+    "referenceMonth": "2026-04",
+    "rentAmount": 5080,
+    "currentRentAmount": 5565.36
+  },
+  {
+    "id": "407",
+    "contractId": "1",
+    "tenantName": "Alexander Coelho",
+    "referenceMonth": "2026-05",
+    "rentAmount": 5080,
+    "currentRentAmount": 5565.36
+  },
+  {
+    "id": "69",
+    "contractId": "6",
+    "tenantName": "Andrea dos Santos Barbosa",
+    "referenceMonth": "2022-01",
+    "rentAmount": 4125,
+    "currentRentAmount": 4125
+  },
+  {
+    "id": "74",
+    "contractId": "6",
+    "tenantName": "Andrea dos Santos Barbosa",
+    "referenceMonth": "2022-02",
+    "rentAmount": 4125,
+    "currentRentAmount": 4125
+  },
+  {
+    "id": "79",
+    "contractId": "6",
+    "tenantName": "Andrea dos Santos Barbosa",
+    "referenceMonth": "2022-03",
+    "rentAmount": 4125,
+    "currentRentAmount": 4125
+  },
+  {
+    "id": "85",
+    "contractId": "6",
+    "tenantName": "Andrea dos Santos Barbosa",
+    "referenceMonth": "2022-04",
+    "rentAmount": 4125,
+    "currentRentAmount": 4125
+  },
+  {
+    "id": "90",
+    "contractId": "6",
+    "tenantName": "Andrea dos Santos Barbosa",
+    "referenceMonth": "2022-05",
+    "rentAmount": 4125,
+    "currentRentAmount": 4125
+  },
+  {
+    "id": "99",
+    "contractId": "6",
+    "tenantName": "Andrea dos Santos Barbosa",
+    "referenceMonth": "2022-06",
+    "rentAmount": 4125,
+    "currentRentAmount": 4125
+  },
+  {
+    "id": "32",
+    "contractId": "6",
+    "tenantName": "Andrea dos Santos Barbosa",
+    "referenceMonth": "2022-11",
+    "rentAmount": 4125,
+    "currentRentAmount": 4125
+  },
+  {
+    "id": "65",
+    "contractId": "6",
+    "tenantName": "Andrea dos Santos Barbosa",
+    "referenceMonth": "2022-12",
+    "rentAmount": 4125,
+    "currentRentAmount": 4125
+  },
+  {
+    "id": "101",
+    "contractId": "6",
+    "tenantName": "Andrea dos Santos Barbosa",
+    "referenceMonth": "2023-07",
+    "rentAmount": 4125,
+    "currentRentAmount": 4125
+  },
+  {
+    "id": "106",
+    "contractId": "6",
+    "tenantName": "Andrea dos Santos Barbosa",
+    "referenceMonth": "2023-08",
+    "rentAmount": 4125,
+    "currentRentAmount": 4125
+  },
+  {
+    "id": "112",
+    "contractId": "6",
+    "tenantName": "Andrea dos Santos Barbosa",
+    "referenceMonth": "2023-09",
+    "rentAmount": 4125,
+    "currentRentAmount": 4125
+  },
+  {
+    "id": "117",
+    "contractId": "6",
+    "tenantName": "Andrea dos Santos Barbosa",
+    "referenceMonth": "2023-10",
+    "rentAmount": 4125,
+    "currentRentAmount": 4125
+  },
+  {
+    "id": "122",
+    "contractId": "6",
+    "tenantName": "Andrea dos Santos Barbosa",
+    "referenceMonth": "2023-11",
+    "rentAmount": 4125,
+    "currentRentAmount": 4125
+  },
+  {
+    "id": "133",
+    "contractId": "6",
+    "tenantName": "Andrea dos Santos Barbosa",
+    "referenceMonth": "2023-12",
+    "rentAmount": 4125,
+    "currentRentAmount": 4125
+  },
+  {
+    "id": "161",
+    "contractId": "6",
+    "tenantName": "Andrea dos Santos Barbosa",
+    "referenceMonth": "2024-01",
+    "rentAmount": 4125,
+    "currentRentAmount": 4125
+  },
+  {
+    "id": "174",
+    "contractId": "6",
+    "tenantName": "Andrea dos Santos Barbosa",
+    "referenceMonth": "2024-02",
+    "rentAmount": 4125,
+    "currentRentAmount": 4125
+  },
+  {
+    "id": "193",
+    "contractId": "6",
+    "tenantName": "Andrea dos Santos Barbosa",
+    "referenceMonth": "2024-03",
+    "rentAmount": 4125,
+    "currentRentAmount": 4125
+  },
+  {
+    "id": "199",
+    "contractId": "6",
+    "tenantName": "Andrea dos Santos Barbosa",
+    "referenceMonth": "2024-04",
+    "rentAmount": 4125,
+    "currentRentAmount": 4125
+  },
+  {
+    "id": "205",
+    "contractId": "6",
+    "tenantName": "Andrea dos Santos Barbosa",
+    "referenceMonth": "2024-05",
+    "rentAmount": 4125,
+    "currentRentAmount": 4125
+  },
+  {
+    "id": "214",
+    "contractId": "6",
+    "tenantName": "Andrea dos Santos Barbosa",
+    "referenceMonth": "2024-06",
+    "rentAmount": 4125,
+    "currentRentAmount": 4125
+  },
+  {
+    "id": "221",
+    "contractId": "6",
+    "tenantName": "Andrea dos Santos Barbosa",
+    "referenceMonth": "2024-07",
+    "rentAmount": 4100,
+    "currentRentAmount": 4100
+  },
+  {
+    "id": "231",
+    "contractId": "6",
+    "tenantName": "Andrea dos Santos Barbosa",
+    "referenceMonth": "2024-08",
+    "rentAmount": 4110,
+    "currentRentAmount": 4110
+  },
+  {
+    "id": "237",
+    "contractId": "6",
+    "tenantName": "Andrea dos Santos Barbosa",
+    "referenceMonth": "2024-09",
+    "rentAmount": 4110,
+    "currentRentAmount": 4110
+  },
+  {
+    "id": "246",
+    "contractId": "6",
+    "tenantName": "Andrea dos Santos Barbosa",
+    "referenceMonth": "2024-10",
+    "rentAmount": 4110,
+    "currentRentAmount": 4110
+  },
+  {
+    "id": "253",
+    "contractId": "6",
+    "tenantName": "Andrea dos Santos Barbosa",
+    "referenceMonth": "2024-11",
+    "rentAmount": 4110,
+    "currentRentAmount": 4110
+  },
+  {
+    "id": "286",
+    "contractId": "6",
+    "tenantName": "Andrea dos Santos Barbosa",
+    "referenceMonth": "2024-12",
+    "rentAmount": 4125,
+    "currentRentAmount": 4110
+  },
+  {
+    "id": "306",
+    "contractId": "6",
+    "tenantName": "Andrea dos Santos Barbosa",
+    "referenceMonth": "2025-01",
+    "rentAmount": 4125,
+    "currentRentAmount": 4110
+  },
+  {
+    "id": "310",
+    "contractId": "6",
+    "tenantName": "Andrea dos Santos Barbosa",
+    "referenceMonth": "2025-02",
+    "rentAmount": 4125,
+    "currentRentAmount": 4110
+  },
+  {
+    "id": "328",
+    "contractId": "6",
+    "tenantName": "Andrea dos Santos Barbosa",
+    "referenceMonth": "2025-03",
+    "rentAmount": 4125,
+    "currentRentAmount": 4110
+  },
+  {
+    "id": "334",
+    "contractId": "6",
+    "tenantName": "Andrea dos Santos Barbosa",
+    "referenceMonth": "2025-04",
+    "rentAmount": 4125,
+    "currentRentAmount": 4110
+  },
+  {
+    "id": "339",
+    "contractId": "6",
+    "tenantName": "Andrea dos Santos Barbosa",
+    "referenceMonth": "2025-05",
+    "rentAmount": 4125,
+    "currentRentAmount": 4110
+  },
+  {
+    "id": "344",
+    "contractId": "6",
+    "tenantName": "Andrea dos Santos Barbosa",
+    "referenceMonth": "2025-06",
+    "rentAmount": 4125,
+    "currentRentAmount": 4110
+  },
+  {
+    "id": "349",
+    "contractId": "6",
+    "tenantName": "Andrea dos Santos Barbosa",
+    "referenceMonth": "2025-07",
+    "rentAmount": 4125,
+    "currentRentAmount": 4290.56
+  },
+  {
+    "id": "354",
+    "contractId": "6",
+    "tenantName": "Andrea dos Santos Barbosa",
+    "referenceMonth": "2025-08",
+    "rentAmount": 4125,
+    "currentRentAmount": 4290.56
+  },
+  {
+    "id": "359",
+    "contractId": "6",
+    "tenantName": "Andrea dos Santos Barbosa",
+    "referenceMonth": "2025-09",
+    "rentAmount": 4125,
+    "currentRentAmount": 4290.56
+  },
+  {
+    "id": "365",
+    "contractId": "6",
+    "tenantName": "Andrea dos Santos Barbosa",
+    "referenceMonth": "2025-10",
+    "rentAmount": 4125,
+    "currentRentAmount": 4290.56
+  },
+  {
+    "id": "373",
+    "contractId": "6",
+    "tenantName": "Andrea dos Santos Barbosa",
+    "referenceMonth": "2025-11",
+    "rentAmount": 4125,
+    "currentRentAmount": 4290.56
+  },
+  {
+    "id": "375",
+    "contractId": "6",
+    "tenantName": "Andrea dos Santos Barbosa",
+    "referenceMonth": "2025-12",
+    "rentAmount": 4125,
+    "currentRentAmount": 4290.56
+  },
+  {
+    "id": "381",
+    "contractId": "6",
+    "tenantName": "Andrea dos Santos Barbosa",
+    "referenceMonth": "2026-01",
+    "rentAmount": 4125,
+    "currentRentAmount": 4290.56
+  },
+  {
+    "id": "389",
+    "contractId": "6",
+    "tenantName": "Andrea dos Santos Barbosa",
+    "referenceMonth": "2026-02",
+    "rentAmount": 4125,
+    "currentRentAmount": 4290.56
+  },
+  {
+    "id": "391",
+    "contractId": "6",
+    "tenantName": "Andrea dos Santos Barbosa",
+    "referenceMonth": "2026-03",
+    "rentAmount": 4125,
+    "currentRentAmount": 4290.56
+  },
+  {
+    "id": "396",
+    "contractId": "6",
+    "tenantName": "Andrea dos Santos Barbosa",
+    "referenceMonth": "2026-04",
+    "rentAmount": 4125,
+    "currentRentAmount": 4290.56
+  },
+  {
+    "id": "406",
+    "contractId": "6",
+    "tenantName": "Andrea dos Santos Barbosa",
+    "referenceMonth": "2026-05",
+    "rentAmount": 4125,
+    "currentRentAmount": 4290.56
+  },
+  {
+    "id": "72",
+    "contractId": "4",
+    "tenantName": "Daniela Pessin Bueno",
+    "referenceMonth": "2022-01",
+    "rentAmount": 5800,
+    "currentRentAmount": 5800
+  },
+  {
+    "id": "77",
+    "contractId": "4",
+    "tenantName": "Daniela Pessin Bueno",
+    "referenceMonth": "2022-02",
+    "rentAmount": 5800,
+    "currentRentAmount": 5800
+  },
+  {
+    "id": "84",
+    "contractId": "4",
+    "tenantName": "Daniela Pessin Bueno",
+    "referenceMonth": "2022-03",
+    "rentAmount": 5800,
+    "currentRentAmount": 5800
+  },
+  {
+    "id": "88",
+    "contractId": "4",
+    "tenantName": "Daniela Pessin Bueno",
+    "referenceMonth": "2022-04",
+    "rentAmount": 5800,
+    "currentRentAmount": 5800
+  },
+  {
+    "id": "93",
+    "contractId": "4",
+    "tenantName": "Daniela Pessin Bueno",
+    "referenceMonth": "2022-05",
+    "rentAmount": 5800,
+    "currentRentAmount": 5800
+  },
+  {
+    "id": "97",
+    "contractId": "4",
+    "tenantName": "Daniela Pessin Bueno",
+    "referenceMonth": "2022-06",
+    "rentAmount": 5800,
+    "currentRentAmount": 5800
+  },
+  {
+    "id": "59",
+    "contractId": "4",
+    "tenantName": "Daniela Pessin Bueno",
+    "referenceMonth": "2022-11",
+    "rentAmount": 0,
+    "currentRentAmount": 0
+  },
+  {
+    "id": "48",
+    "contractId": "4",
+    "tenantName": "Daniela Pessin Bueno",
+    "referenceMonth": "2022-12",
+    "rentAmount": 0,
+    "currentRentAmount": 0
+  },
+  {
+    "id": "67",
+    "contractId": "4",
+    "tenantName": "Daniela Pessin Bueno",
+    "referenceMonth": "2022-12",
+    "rentAmount": 5800,
+    "currentRentAmount": 5800
+  },
+  {
+    "id": "104",
+    "contractId": "4",
+    "tenantName": "Daniela Pessin Bueno",
+    "referenceMonth": "2023-07",
+    "rentAmount": 5800,
+    "currentRentAmount": 5800
+  },
+  {
+    "id": "109",
+    "contractId": "4",
+    "tenantName": "Daniela Pessin Bueno",
+    "referenceMonth": "2023-08",
+    "rentAmount": 5800,
+    "currentRentAmount": 5800
+  },
+  {
+    "id": "115",
+    "contractId": "4",
+    "tenantName": "Daniela Pessin Bueno",
+    "referenceMonth": "2023-09",
+    "rentAmount": 5800,
+    "currentRentAmount": 5800
+  },
+  {
+    "id": "120",
+    "contractId": "4",
+    "tenantName": "Daniela Pessin Bueno",
+    "referenceMonth": "2023-10",
+    "rentAmount": 5800,
+    "currentRentAmount": 5800
+  },
+  {
+    "id": "129",
+    "contractId": "4",
+    "tenantName": "Daniela Pessin Bueno",
+    "referenceMonth": "2023-11",
+    "rentAmount": 6079.52,
+    "currentRentAmount": 6079.52
+  },
+  {
+    "id": "135",
+    "contractId": "4",
+    "tenantName": "Daniela Pessin Bueno",
+    "referenceMonth": "2023-12",
+    "rentAmount": 6079.52,
+    "currentRentAmount": 6079.52
+  },
+  {
+    "id": "166",
+    "contractId": "4",
+    "tenantName": "Daniela Pessin Bueno",
+    "referenceMonth": "2024-01",
+    "rentAmount": 6080,
+    "currentRentAmount": 6080
+  },
+  {
+    "id": "176",
+    "contractId": "4",
+    "tenantName": "Daniela Pessin Bueno",
+    "referenceMonth": "2024-02",
+    "rentAmount": 6080,
+    "currentRentAmount": 6080
+  },
+  {
+    "id": "195",
+    "contractId": "4",
+    "tenantName": "Daniela Pessin Bueno",
+    "referenceMonth": "2024-03",
+    "rentAmount": 6080,
+    "currentRentAmount": 6080
+  },
+  {
+    "id": "201",
+    "contractId": "4",
+    "tenantName": "Daniela Pessin Bueno",
+    "referenceMonth": "2024-04",
+    "rentAmount": 6080,
+    "currentRentAmount": 6080
+  },
+  {
+    "id": "206",
+    "contractId": "4",
+    "tenantName": "Daniela Pessin Bueno",
+    "referenceMonth": "2024-05",
+    "rentAmount": 6080,
+    "currentRentAmount": 6080
+  },
+  {
+    "id": "211",
+    "contractId": "4",
+    "tenantName": "Daniela Pessin Bueno",
+    "referenceMonth": "2024-06",
+    "rentAmount": 6080,
+    "currentRentAmount": 6080
+  },
+  {
+    "id": "217",
+    "contractId": "4",
+    "tenantName": "Daniela Pessin Bueno",
+    "referenceMonth": "2024-07",
+    "rentAmount": 6080,
+    "currentRentAmount": 6080
+  },
+  {
+    "id": "233",
+    "contractId": "4",
+    "tenantName": "Daniela Pessin Bueno",
+    "referenceMonth": "2024-08",
+    "rentAmount": 6080,
+    "currentRentAmount": 6080
+  },
+  {
+    "id": "239",
+    "contractId": "4",
+    "tenantName": "Daniela Pessin Bueno",
+    "referenceMonth": "2024-09",
+    "rentAmount": 6080,
+    "currentRentAmount": 6080
+  },
+  {
+    "id": "251",
+    "contractId": "4",
+    "tenantName": "Daniela Pessin Bueno",
+    "referenceMonth": "2024-10",
+    "rentAmount": 6080,
+    "currentRentAmount": 6080
+  },
+  {
+    "id": "261",
+    "contractId": "4",
+    "tenantName": "Daniela Pessin Bueno",
+    "referenceMonth": "2024-11",
+    "rentAmount": 6248.94,
+    "currentRentAmount": 6419.26
+  },
+  {
+    "id": "285",
+    "contractId": "4",
+    "tenantName": "Daniela Pessin Bueno",
+    "referenceMonth": "2024-12",
+    "rentAmount": 5800,
+    "currentRentAmount": 6419.26
+  },
+  {
+    "id": "307",
+    "contractId": "4",
+    "tenantName": "Daniela Pessin Bueno",
+    "referenceMonth": "2025-01",
+    "rentAmount": 5800,
+    "currentRentAmount": 6419.26
+  },
+  {
+    "id": "314",
+    "contractId": "4",
+    "tenantName": "Daniela Pessin Bueno",
+    "referenceMonth": "2025-02",
+    "rentAmount": 5800,
+    "currentRentAmount": 6419.26
+  },
+  {
+    "id": "332",
+    "contractId": "4",
+    "tenantName": "Daniela Pessin Bueno",
+    "referenceMonth": "2025-03",
+    "rentAmount": 5800,
+    "currentRentAmount": 6419.26
+  },
+  {
+    "id": "333",
+    "contractId": "4",
+    "tenantName": "Daniela Pessin Bueno",
+    "referenceMonth": "2025-04",
+    "rentAmount": 5800,
+    "currentRentAmount": 6419.26
+  },
+  {
+    "id": "338",
+    "contractId": "4",
+    "tenantName": "Daniela Pessin Bueno",
+    "referenceMonth": "2025-05",
+    "rentAmount": 5800,
+    "currentRentAmount": 6685.79
+  },
+  {
+    "id": "347",
+    "contractId": "4",
+    "tenantName": "Daniela Pessin Bueno",
+    "referenceMonth": "2025-06",
+    "rentAmount": 5800,
+    "currentRentAmount": 6685.79
+  },
+  {
+    "id": "352",
+    "contractId": "4",
+    "tenantName": "Daniela Pessin Bueno",
+    "referenceMonth": "2025-07",
+    "rentAmount": 5800,
+    "currentRentAmount": 6644.62
+  },
+  {
+    "id": "353",
+    "contractId": "4",
+    "tenantName": "Daniela Pessin Bueno",
+    "referenceMonth": "2025-08",
+    "rentAmount": 5800,
+    "currentRentAmount": 6685.79
+  },
+  {
+    "id": "362",
+    "contractId": "4",
+    "tenantName": "Daniela Pessin Bueno",
+    "referenceMonth": "2025-09",
+    "rentAmount": 5800,
+    "currentRentAmount": 6644.62
+  },
+  {
+    "id": "364",
+    "contractId": "4",
+    "tenantName": "Daniela Pessin Bueno",
+    "referenceMonth": "2025-10",
+    "rentAmount": 5800,
+    "currentRentAmount": 6644.62
+  },
+  {
+    "id": "374",
+    "contractId": "4",
+    "tenantName": "Daniela Pessin Bueno",
+    "referenceMonth": "2025-11",
+    "rentAmount": 5800,
+    "currentRentAmount": 6644.62
+  },
+  {
+    "id": "379",
+    "contractId": "4",
+    "tenantName": "Daniela Pessin Bueno",
+    "referenceMonth": "2025-12",
+    "rentAmount": 5800,
+    "currentRentAmount": 6644.62
+  },
+  {
+    "id": "380",
+    "contractId": "4",
+    "tenantName": "Daniela Pessin Bueno",
+    "referenceMonth": "2026-01",
+    "rentAmount": 5800,
+    "currentRentAmount": 6644.62
+  },
+  {
+    "id": "388",
+    "contractId": "4",
+    "tenantName": "Daniela Pessin Bueno",
+    "referenceMonth": "2026-02",
+    "rentAmount": 5800,
+    "currentRentAmount": 6644.62
+  },
+  {
+    "id": "395",
+    "contractId": "4",
+    "tenantName": "Daniela Pessin Bueno",
+    "referenceMonth": "2026-03",
+    "rentAmount": 5800,
+    "currentRentAmount": 6644.62
+  },
+  {
+    "id": "402",
+    "contractId": "4",
+    "tenantName": "Daniela Pessin Bueno",
+    "referenceMonth": "2026-04",
+    "rentAmount": 5800,
+    "currentRentAmount": 6644.62
+  },
+  {
+    "id": "405",
+    "contractId": "4",
+    "tenantName": "Daniela Pessin Bueno",
+    "referenceMonth": "2026-05",
+    "rentAmount": 6685.79,
+    "currentRentAmount": 6685.79
+  },
+  {
+    "id": "73",
+    "contractId": "8",
+    "tenantName": "Fernanda Borges Franco",
+    "referenceMonth": "2022-01",
+    "rentAmount": 2600,
+    "currentRentAmount": 2600
+  },
+  {
+    "id": "78",
+    "contractId": "8",
+    "tenantName": "Fernanda Borges Franco",
+    "referenceMonth": "2022-02",
+    "rentAmount": 2600,
+    "currentRentAmount": 2600
+  },
+  {
+    "id": "83",
+    "contractId": "8",
+    "tenantName": "Fernanda Borges Franco",
+    "referenceMonth": "2022-03",
+    "rentAmount": 2600,
+    "currentRentAmount": 2600
+  },
+  {
+    "id": "89",
+    "contractId": "8",
+    "tenantName": "Fernanda Borges Franco",
+    "referenceMonth": "2022-04",
+    "rentAmount": 2600,
+    "currentRentAmount": 2600
+  },
+  {
+    "id": "94",
+    "contractId": "8",
+    "tenantName": "Fernanda Borges Franco",
+    "referenceMonth": "2022-05",
+    "rentAmount": 2600,
+    "currentRentAmount": 2600
+  },
+  {
+    "id": "98",
+    "contractId": "8",
+    "tenantName": "Fernanda Borges Franco",
+    "referenceMonth": "2022-06",
+    "rentAmount": 2600,
+    "currentRentAmount": 2600
+  },
+  {
+    "id": "64",
+    "contractId": "8",
+    "tenantName": "Fernanda Borges Franco",
+    "referenceMonth": "2022-12",
+    "rentAmount": 816.67,
+    "currentRentAmount": 816.67
+  },
+  {
+    "id": "105",
+    "contractId": "8",
+    "tenantName": "Fernanda Borges Franco",
+    "referenceMonth": "2023-07",
+    "rentAmount": 2600,
+    "currentRentAmount": 2600
+  },
+  {
+    "id": "110",
+    "contractId": "8",
+    "tenantName": "Fernanda Borges Franco",
+    "referenceMonth": "2023-08",
+    "rentAmount": 2600,
+    "currentRentAmount": 2600
+  },
+  {
+    "id": "116",
+    "contractId": "8",
+    "tenantName": "Fernanda Borges Franco",
+    "referenceMonth": "2023-09",
+    "rentAmount": 2600,
+    "currentRentAmount": 2600
+  },
+  {
+    "id": "121",
+    "contractId": "8",
+    "tenantName": "Fernanda Borges Franco",
+    "referenceMonth": "2023-10",
+    "rentAmount": 2600,
+    "currentRentAmount": 2600
+  },
+  {
+    "id": "126",
+    "contractId": "8",
+    "tenantName": "Fernanda Borges Franco",
+    "referenceMonth": "2023-11",
+    "rentAmount": 2600,
+    "currentRentAmount": 2600
+  },
+  {
+    "id": "136",
+    "contractId": "8",
+    "tenantName": "Fernanda Borges Franco",
+    "referenceMonth": "2023-12",
+    "rentAmount": 2600,
+    "currentRentAmount": 2600
+  },
+  {
+    "id": "169",
+    "contractId": "8",
+    "tenantName": "Fernanda Borges Franco",
+    "referenceMonth": "2024-01",
+    "rentAmount": 2600,
+    "currentRentAmount": 2600
+  },
+  {
+    "id": "196",
+    "contractId": "8",
+    "tenantName": "Fernanda Borges Franco",
+    "referenceMonth": "2024-03",
+    "rentAmount": 2600,
+    "currentRentAmount": 2600
+  },
+  {
+    "id": "202",
+    "contractId": "8",
+    "tenantName": "Fernanda Borges Franco",
+    "referenceMonth": "2024-04",
+    "rentAmount": 2600,
+    "currentRentAmount": 2600
+  },
+  {
+    "id": "207",
+    "contractId": "8",
+    "tenantName": "Fernanda Borges Franco",
+    "referenceMonth": "2024-05",
+    "rentAmount": 2600,
+    "currentRentAmount": 2600
+  },
+  {
+    "id": "212",
+    "contractId": "8",
+    "tenantName": "Fernanda Borges Franco",
+    "referenceMonth": "2024-06",
+    "rentAmount": 2600,
+    "currentRentAmount": 2600
+  },
+  {
+    "id": "218",
+    "contractId": "8",
+    "tenantName": "Fernanda Borges Franco",
+    "referenceMonth": "2024-07",
+    "rentAmount": 2600,
+    "currentRentAmount": 2600
+  },
+  {
+    "id": "234",
+    "contractId": "8",
+    "tenantName": "Fernanda Borges Franco",
+    "referenceMonth": "2024-08",
+    "rentAmount": 2700,
+    "currentRentAmount": 2700
+  },
+  {
+    "id": "244",
+    "contractId": "8",
+    "tenantName": "Fernanda Borges Franco",
+    "referenceMonth": "2024-09",
+    "rentAmount": 2600,
+    "currentRentAmount": 2600
+  },
+  {
+    "id": "249",
+    "contractId": "8",
+    "tenantName": "Fernanda Borges Franco",
+    "referenceMonth": "2024-10",
+    "rentAmount": 2600,
+    "currentRentAmount": 2600
+  },
+  {
+    "id": "256",
+    "contractId": "8",
+    "tenantName": "Fernanda Borges Franco",
+    "referenceMonth": "2024-11",
+    "rentAmount": 2600,
+    "currentRentAmount": 2600
+  },
+  {
+    "id": "287",
+    "contractId": "8",
+    "tenantName": "Fernanda Borges Franco",
+    "referenceMonth": "2024-12",
+    "rentAmount": 2600,
+    "currentRentAmount": 2764.45
+  },
+  {
+    "id": "308",
+    "contractId": "8",
+    "tenantName": "Fernanda Borges Franco",
+    "referenceMonth": "2025-01",
+    "rentAmount": 2600,
+    "currentRentAmount": 2764.45
+  },
+  {
+    "id": "198",
+    "contractId": "8",
+    "tenantName": "Fernanda Borges Franco",
+    "referenceMonth": "2025-02",
+    "rentAmount": 2600,
+    "currentRentAmount": 2600
+  },
+  {
+    "id": "313",
+    "contractId": "8",
+    "tenantName": "Fernanda Borges Franco",
+    "referenceMonth": "2025-02",
+    "rentAmount": 2600,
+    "currentRentAmount": 2764.45
+  },
+  {
+    "id": "331",
+    "contractId": "8",
+    "tenantName": "Fernanda Borges Franco",
+    "referenceMonth": "2025-03",
+    "rentAmount": 2600,
+    "currentRentAmount": 2764.45
+  },
+  {
+    "id": "335",
+    "contractId": "8",
+    "tenantName": "Fernanda Borges Franco",
+    "referenceMonth": "2025-04",
+    "rentAmount": 2600,
+    "currentRentAmount": 2764.45
+  },
+  {
+    "id": "340",
+    "contractId": "8",
+    "tenantName": "Fernanda Borges Franco",
+    "referenceMonth": "2025-05",
+    "rentAmount": 2600,
+    "currentRentAmount": 2764.45
+  },
+  {
+    "id": "343",
+    "contractId": "8",
+    "tenantName": "Fernanda Borges Franco",
+    "referenceMonth": "2025-06",
+    "rentAmount": 2600,
+    "currentRentAmount": 1843.1
+  },
+  {
+    "id": "138",
+    "contractId": "9",
+    "tenantName": "Glaucielle Ribeiro",
+    "referenceMonth": "2023-12",
+    "rentAmount": 2650,
+    "currentRentAmount": 2650
+  },
+  {
+    "id": "141",
+    "contractId": "9",
+    "tenantName": "Glaucielle Ribeiro",
+    "referenceMonth": "2023-12",
+    "rentAmount": 0,
+    "currentRentAmount": 0
+  },
+  {
+    "id": "188",
+    "contractId": "9",
+    "tenantName": "Glaucielle Ribeiro",
+    "referenceMonth": "2024-02",
+    "rentAmount": 2650,
+    "currentRentAmount": 2650
+  },
+  {
+    "id": "197",
+    "contractId": "9",
+    "tenantName": "Glaucielle Ribeiro",
+    "referenceMonth": "2024-03",
+    "rentAmount": 2650,
+    "currentRentAmount": 2650
+  },
+  {
+    "id": "203",
+    "contractId": "9",
+    "tenantName": "Glaucielle Ribeiro",
+    "referenceMonth": "2024-04",
+    "rentAmount": 2650,
+    "currentRentAmount": 2650
+  },
+  {
+    "id": "208",
+    "contractId": "9",
+    "tenantName": "Glaucielle Ribeiro",
+    "referenceMonth": "2024-05",
+    "rentAmount": 2650,
+    "currentRentAmount": 2650
+  },
+  {
+    "id": "213",
+    "contractId": "9",
+    "tenantName": "Glaucielle Ribeiro",
+    "referenceMonth": "2024-06",
+    "rentAmount": 2650,
+    "currentRentAmount": 2650
+  },
+  {
+    "id": "219",
+    "contractId": "9",
+    "tenantName": "Glaucielle Ribeiro",
+    "referenceMonth": "2024-07",
+    "rentAmount": 2650,
+    "currentRentAmount": 2650
+  },
+  {
+    "id": "242",
+    "contractId": "9",
+    "tenantName": "Glaucielle Ribeiro",
+    "referenceMonth": "2024-09",
+    "rentAmount": 2650,
+    "currentRentAmount": 2650
+  },
+  {
+    "id": "245",
+    "contractId": "9",
+    "tenantName": "Glaucielle Ribeiro",
+    "referenceMonth": "2024-09",
+    "rentAmount": 2650,
+    "currentRentAmount": 2650
+  },
+  {
+    "id": "252",
+    "contractId": "9",
+    "tenantName": "Glaucielle Ribeiro",
+    "referenceMonth": "2024-10",
+    "rentAmount": 2650,
+    "currentRentAmount": 2650
+  },
+  {
+    "id": "284",
+    "contractId": "9",
+    "tenantName": "Glaucielle Ribeiro",
+    "referenceMonth": "2024-11",
+    "rentAmount": 2650,
+    "currentRentAmount": 2650
+  },
+  {
+    "id": "288",
+    "contractId": "9",
+    "tenantName": "Glaucielle Ribeiro",
+    "referenceMonth": "2024-12",
+    "rentAmount": 2650,
+    "currentRentAmount": 2817.61
+  },
+  {
+    "id": "309",
+    "contractId": "9",
+    "tenantName": "Glaucielle Ribeiro",
+    "referenceMonth": "2025-01",
+    "rentAmount": 2650,
+    "currentRentAmount": 2817.61
+  },
+  {
+    "id": "312",
+    "contractId": "9",
+    "tenantName": "Glaucielle Ribeiro",
+    "referenceMonth": "2025-02",
+    "rentAmount": 2650,
+    "currentRentAmount": 2817.61
+  },
+  {
+    "id": "330",
+    "contractId": "9",
+    "tenantName": "Glaucielle Ribeiro",
+    "referenceMonth": "2025-03",
+    "rentAmount": 2650,
+    "currentRentAmount": 2817.61
+  },
+  {
+    "id": "336",
+    "contractId": "9",
+    "tenantName": "Glaucielle Ribeiro",
+    "referenceMonth": "2025-04",
+    "rentAmount": 2650,
+    "currentRentAmount": 2817.61
+  },
+  {
+    "id": "341",
+    "contractId": "9",
+    "tenantName": "Glaucielle Ribeiro",
+    "referenceMonth": "2025-05",
+    "rentAmount": 2650,
+    "currentRentAmount": 2817.61
+  },
+  {
+    "id": "345",
+    "contractId": "9",
+    "tenantName": "Glaucielle Ribeiro",
+    "referenceMonth": "2025-06",
+    "rentAmount": 2650,
+    "currentRentAmount": 2817.61
+  },
+  {
+    "id": "351",
+    "contractId": "9",
+    "tenantName": "Glaucielle Ribeiro",
+    "referenceMonth": "2025-07",
+    "rentAmount": 2650,
+    "currentRentAmount": 2817.61
+  },
+  {
+    "id": "355",
+    "contractId": "9",
+    "tenantName": "Glaucielle Ribeiro",
+    "referenceMonth": "2025-08",
+    "rentAmount": 2650,
+    "currentRentAmount": 2817.61
+  },
+  {
+    "id": "361",
+    "contractId": "9",
+    "tenantName": "Glaucielle Ribeiro",
+    "referenceMonth": "2025-09",
+    "rentAmount": 2650,
+    "currentRentAmount": 2817.61
+  },
+  {
+    "id": "366",
+    "contractId": "9",
+    "tenantName": "Glaucielle Ribeiro",
+    "referenceMonth": "2025-10",
+    "rentAmount": 2650,
+    "currentRentAmount": 2817.61
+  },
+  {
+    "id": "372",
+    "contractId": "9",
+    "tenantName": "Glaucielle Ribeiro",
+    "referenceMonth": "2025-11",
+    "rentAmount": 2650,
+    "currentRentAmount": 2817.61
+  },
+  {
+    "id": "376",
+    "contractId": "9",
+    "tenantName": "Glaucielle Ribeiro",
+    "referenceMonth": "2025-12",
+    "rentAmount": 2650,
+    "currentRentAmount": 2817.61
+  },
+  {
+    "id": "383",
+    "contractId": "9",
+    "tenantName": "Glaucielle Ribeiro",
+    "referenceMonth": "2026-01",
+    "rentAmount": 2650,
+    "currentRentAmount": 2814.74
+  },
+  {
+    "id": "386",
+    "contractId": "9",
+    "tenantName": "Glaucielle Ribeiro",
+    "referenceMonth": "2026-02",
+    "rentAmount": 2650,
+    "currentRentAmount": 2814.74
+  },
+  {
+    "id": "393",
+    "contractId": "9",
+    "tenantName": "Glaucielle Ribeiro",
+    "referenceMonth": "2026-03",
+    "rentAmount": 2650,
+    "currentRentAmount": 2814.74
+  },
+  {
+    "id": "399",
+    "contractId": "9",
+    "tenantName": "Glaucielle Ribeiro",
+    "referenceMonth": "2026-04",
+    "rentAmount": 2650,
+    "currentRentAmount": 2814.74
+  },
+  {
+    "id": "403",
+    "contractId": "9",
+    "tenantName": "Glaucielle Ribeiro",
+    "referenceMonth": "2026-05",
+    "rentAmount": 2814.74,
+    "currentRentAmount": 2814.74
+  },
+  {
+    "id": "358",
+    "contractId": "31",
+    "tenantName": "Jessica Duarte Silva",
+    "referenceMonth": "2025-08",
+    "rentAmount": 2850,
+    "currentRentAmount": 0
+  },
+  {
+    "id": "360",
+    "contractId": "31",
+    "tenantName": "Jessica Duarte Silva",
+    "referenceMonth": "2025-09",
+    "rentAmount": 2850,
+    "currentRentAmount": 2850
+  },
+  {
+    "id": "368",
+    "contractId": "31",
+    "tenantName": "Jessica Duarte Silva",
+    "referenceMonth": "2025-10",
+    "rentAmount": 2850,
+    "currentRentAmount": 2850
+  },
+  {
+    "id": "371",
+    "contractId": "31",
+    "tenantName": "Jessica Duarte Silva",
+    "referenceMonth": "2025-11",
+    "rentAmount": 2850,
+    "currentRentAmount": 2850
+  },
+  {
+    "id": "377",
+    "contractId": "31",
+    "tenantName": "Jessica Duarte Silva",
+    "referenceMonth": "2025-12",
+    "rentAmount": 2850,
+    "currentRentAmount": 2850
+  },
+  {
+    "id": "384",
+    "contractId": "31",
+    "tenantName": "Jessica Duarte Silva",
+    "referenceMonth": "2026-01",
+    "rentAmount": 2850,
+    "currentRentAmount": 2850
+  },
+  {
+    "id": "387",
+    "contractId": "31",
+    "tenantName": "Jessica Duarte Silva",
+    "referenceMonth": "2026-02",
+    "rentAmount": 2850,
+    "currentRentAmount": 2850
+  },
+  {
+    "id": "392",
+    "contractId": "31",
+    "tenantName": "Jessica Duarte Silva",
+    "referenceMonth": "2026-03",
+    "rentAmount": 2850,
+    "currentRentAmount": 2850
+  },
+  {
+    "id": "398",
+    "contractId": "31",
+    "tenantName": "Jessica Duarte Silva",
+    "referenceMonth": "2026-04",
+    "rentAmount": 2850,
+    "currentRentAmount": 2850
+  },
+  {
+    "id": "404",
+    "contractId": "31",
+    "tenantName": "Jessica Duarte Silva",
+    "referenceMonth": "2026-05",
+    "rentAmount": 2850,
+    "currentRentAmount": 2850
+  },
+  {
+    "id": "42",
+    "contractId": "5",
+    "tenantName": "Luiza",
+    "referenceMonth": "2022-11",
+    "rentAmount": 2450,
+    "currentRentAmount": 2450
+  },
+  {
+    "id": "63",
+    "contractId": "5",
+    "tenantName": "Luiza",
+    "referenceMonth": "2022-12",
+    "rentAmount": 1633.33,
+    "currentRentAmount": 1633.33
+  },
+  {
+    "id": "71",
+    "contractId": "2",
+    "tenantName": "Paula Iuri Iwano",
+    "referenceMonth": "2022-01",
+    "rentAmount": 2500,
+    "currentRentAmount": 2500
+  },
+  {
+    "id": "76",
+    "contractId": "2",
+    "tenantName": "Paula Iuri Iwano",
+    "referenceMonth": "2022-02",
+    "rentAmount": 2500,
+    "currentRentAmount": 2500
+  },
+  {
+    "id": "81",
+    "contractId": "2",
+    "tenantName": "Paula Iuri Iwano",
+    "referenceMonth": "2022-03",
+    "rentAmount": 2500,
+    "currentRentAmount": 2500
+  },
+  {
+    "id": "87",
+    "contractId": "2",
+    "tenantName": "Paula Iuri Iwano",
+    "referenceMonth": "2022-04",
+    "rentAmount": 2500,
+    "currentRentAmount": 2500
+  },
+  {
+    "id": "92",
+    "contractId": "2",
+    "tenantName": "Paula Iuri Iwano",
+    "referenceMonth": "2022-05",
+    "rentAmount": 2500,
+    "currentRentAmount": 2500
+  },
+  {
+    "id": "96",
+    "contractId": "2",
+    "tenantName": "Paula Iuri Iwano",
+    "referenceMonth": "2022-06",
+    "rentAmount": 2500,
+    "currentRentAmount": 2500
+  },
+  {
+    "id": "38",
+    "contractId": "2",
+    "tenantName": "Paula Iuri Iwano",
+    "referenceMonth": "2022-11",
+    "rentAmount": 2500,
+    "currentRentAmount": 2500
+  },
+  {
+    "id": "68",
+    "contractId": "2",
+    "tenantName": "Paula Iuri Iwano",
+    "referenceMonth": "2022-12",
+    "rentAmount": 2500,
+    "currentRentAmount": 2500
+  },
+  {
+    "id": "103",
+    "contractId": "2",
+    "tenantName": "Paula Iuri Iwano",
+    "referenceMonth": "2023-07",
+    "rentAmount": 2500,
+    "currentRentAmount": 2500
+  },
+  {
+    "id": "108",
+    "contractId": "2",
+    "tenantName": "Paula Iuri Iwano",
+    "referenceMonth": "2023-08",
+    "rentAmount": 2500,
+    "currentRentAmount": 2500
+  },
+  {
+    "id": "111",
+    "contractId": "2",
+    "tenantName": "Paula Iuri Iwano",
+    "referenceMonth": "2023-09",
+    "rentAmount": 0,
+    "currentRentAmount": 0
+  },
+  {
+    "id": "114",
+    "contractId": "2",
+    "tenantName": "Paula Iuri Iwano",
+    "referenceMonth": "2023-09",
+    "rentAmount": 2636.46,
+    "currentRentAmount": 2636.46
+  },
+  {
+    "id": "119",
+    "contractId": "2",
+    "tenantName": "Paula Iuri Iwano",
+    "referenceMonth": "2023-10",
+    "rentAmount": 2636.46,
+    "currentRentAmount": 2636.46
+  },
+  {
+    "id": "124",
+    "contractId": "2",
+    "tenantName": "Paula Iuri Iwano",
+    "referenceMonth": "2023-11",
+    "rentAmount": 2636.46,
+    "currentRentAmount": 2636.46
+  },
+  {
+    "id": "137",
+    "contractId": "2",
+    "tenantName": "Paula Iuri Iwano",
+    "referenceMonth": "2023-12",
+    "rentAmount": 1572.18,
+    "currentRentAmount": 1572.18
+  }
+]
