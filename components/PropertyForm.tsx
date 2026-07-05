@@ -8,6 +8,8 @@ import type { Property } from '@/lib/types';
 import { inputClass, labelClass, primaryButtonClass, secondaryButtonClass, dangerLinkClass } from '@/lib/formStyles';
 import { CurrencyInput } from '@/components/CurrencyInput';
 
+type ChargeMode = 'indefinite' | 'period';
+
 export function PropertyForm({ property }: { property?: Property }) {
   const router = useRouter();
   const isEditing = Boolean(property);
@@ -21,13 +23,29 @@ export function PropertyForm({ property }: { property?: Property }) {
     managementCompany: property?.managementCompany ?? '',
     monthlyIptu: String(property?.monthlyIptu ?? 0),
     monthlyInsurance: String(property?.monthlyInsurance ?? 0),
-    refundFee: String(property?.refundFee ?? 0),
     condoFee: String(property?.condoFee ?? 0),
+
+    // ── IPTU: quantidade de meses + mês de início da cobrança ──────────────
+    // O IPTU normalmente é parcelado em 10 meses por ano.
+    iptuChargeMonths: String(property?.iptuChargeMonths ?? 10),
+    iptuChargeStartMonth: property?.iptuChargeStartMonth ?? '',
+
+    // ── Fundo de reserva (refundFee): indefinido OU por N meses ────────────
+    refundFee: String(property?.refundFee ?? 0),
+    refundFeeMode: (property?.refundFeeChargeMonths != null ? 'period' : 'indefinite') as ChargeMode,
+    refundFeeChargeMonths: String(property?.refundFeeChargeMonths ?? 12),
+    refundFeeChargeStartMonth: property?.refundFeeChargeStartMonth ?? '',
+
+    // ── Outras taxas extras no condomínio (novo): indefinido OU N meses ────
+    extraCondoFee: String(property?.extraCondoFee ?? 0),
+    extraCondoFeeMode: (property?.extraCondoFeeChargeMonths != null ? 'period' : 'indefinite') as ChargeMode,
+    extraCondoFeeChargeMonths: String(property?.extraCondoFeeChargeMonths ?? 12),
+    extraCondoFeeChargeStartMonth: property?.extraCondoFeeChargeStartMonth ?? '',
   });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  function update<K extends keyof typeof form>(key: K, value: string) {
+  function update<K extends keyof typeof form>(key: K, value: (typeof form)[K]) {
     setForm((f) => ({ ...f, [key]: value }));
   }
 
@@ -43,10 +61,27 @@ export function PropertyForm({ property }: { property?: Property }) {
         iptuCode: form.iptuCode,
         energyCode: form.energyCode,
         managementCompany: form.managementCompany,
-        monthlyIptu: parseFloat(form.monthlyIptu) || 0,
         monthlyInsurance: parseFloat(form.monthlyInsurance) || 0,
-        refundFee: parseFloat(form.refundFee) || 0,
         condoFee: parseFloat(form.condoFee) || 0,
+
+        // IPTU + período de cobrança (sem mês de início = cobra todo mês, legado)
+        monthlyIptu: parseFloat(form.monthlyIptu) || 0,
+        iptuChargeMonths: parseInt(form.iptuChargeMonths, 10) || null,
+        iptuChargeStartMonth: form.iptuChargeStartMonth || null,
+
+        // Fundo de reserva: months = null significa "indefinido"
+        refundFee: parseFloat(form.refundFee) || 0,
+        refundFeeChargeMonths:
+          form.refundFeeMode === 'period' ? parseInt(form.refundFeeChargeMonths, 10) || null : null,
+        refundFeeChargeStartMonth:
+          form.refundFeeMode === 'period' ? form.refundFeeChargeStartMonth || null : null,
+
+        // Outras taxas extras no condomínio: mesmo conceito
+        extraCondoFee: parseFloat(form.extraCondoFee) || 0,
+        extraCondoFeeChargeMonths:
+          form.extraCondoFeeMode === 'period' ? parseInt(form.extraCondoFeeChargeMonths, 10) || null : null,
+        extraCondoFeeChargeStartMonth:
+          form.extraCondoFeeMode === 'period' ? form.extraCondoFeeChargeStartMonth || null : null,
       };
 
       if (isEditing && property) {
@@ -120,10 +155,6 @@ export function PropertyForm({ property }: { property?: Property }) {
           <CurrencyInput className={inputClass} value={form.condoFee} onChange={(v) => update('condoFee', v)} />
         </div>
         <div>
-          <label className={labelClass}>IPTU mensal</label>
-          <CurrencyInput className={inputClass} value={form.monthlyIptu} onChange={(v) => update('monthlyIptu', v)} />
-        </div>
-        <div>
           <label className={labelClass}>Seguro mensal</label>
           <CurrencyInput
             className={inputClass}
@@ -131,10 +162,140 @@ export function PropertyForm({ property }: { property?: Property }) {
             onChange={(v) => update('monthlyInsurance', v)}
           />
         </div>
-        <div>
-          <label className={labelClass}>Taxa de reembolso</label>
-          <CurrencyInput className={inputClass} value={form.refundFee} onChange={(v) => update('refundFee', v)} />
+      </div>
+
+      {/* ── IPTU mensal + período de cobrança ─────────────────────────────── */}
+      <div className="rounded-md border border-hairline bg-paperDim/40 p-4">
+        <p className={labelClass}>IPTU mensal</p>
+        <div className="mt-2 grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div>
+            <label className={labelClass}>Valor mensal</label>
+            <CurrencyInput className={inputClass} value={form.monthlyIptu} onChange={(v) => update('monthlyIptu', v)} />
+          </div>
+          <div>
+            <label className={labelClass}>Meses de cobrança</label>
+            <input
+              type="number"
+              min={1}
+              max={12}
+              className={inputClass}
+              value={form.iptuChargeMonths}
+              onChange={(e) => update('iptuChargeMonths', e.target.value)}
+            />
+          </div>
+          <div>
+            <label className={labelClass}>Mês de início</label>
+            <input
+              type="month"
+              className={inputClass}
+              value={form.iptuChargeStartMonth}
+              onChange={(e) => update('iptuChargeStartMonth', e.target.value)}
+            />
+          </div>
         </div>
+        <p className="mt-2 text-xs text-slate">
+          O IPTU normalmente é cobrado em 10 parcelas por ano. O boleto só recebe o valor de IPTU quando o mês de
+          referência estiver dentro do período (início + quantidade de meses). Sem mês de início, é cobrado em todos
+          os meses, como antes.
+        </p>
+      </div>
+
+      {/* ── Fundo de reserva (taxa de reembolso) + período de cobrança ────── */}
+      <div className="rounded-md border border-hairline bg-paperDim/40 p-4">
+        <p className={labelClass}>Fundo de reserva (taxa de reembolso — desconto)</p>
+        <div className="mt-2 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label className={labelClass}>Valor mensal</label>
+            <CurrencyInput className={inputClass} value={form.refundFee} onChange={(v) => update('refundFee', v)} />
+          </div>
+          <div>
+            <label className={labelClass}>Prazo de cobrança</label>
+            <select
+              className={inputClass}
+              value={form.refundFeeMode}
+              onChange={(e) => update('refundFeeMode', e.target.value as ChargeMode)}
+            >
+              <option value="indefinite">Indefinido (todo mês)</option>
+              <option value="period">Por quantidade de meses</option>
+            </select>
+          </div>
+          {form.refundFeeMode === 'period' && (
+            <>
+              <div>
+                <label className={labelClass}>Meses de cobrança</label>
+                <input
+                  type="number"
+                  min={1}
+                  className={inputClass}
+                  value={form.refundFeeChargeMonths}
+                  onChange={(e) => update('refundFeeChargeMonths', e.target.value)}
+                />
+              </div>
+              <div>
+                <label className={labelClass}>Mês de início</label>
+                <input
+                  type="month"
+                  className={inputClass}
+                  value={form.refundFeeChargeStartMonth}
+                  onChange={(e) => update('refundFeeChargeStartMonth', e.target.value)}
+                />
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* ── Outras taxas extras no condomínio (novo) ──────────────────────── */}
+      <div className="rounded-md border border-hairline bg-paperDim/40 p-4">
+        <p className={labelClass}>Outras taxas extras no condomínio</p>
+        <div className="mt-2 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label className={labelClass}>Valor mensal</label>
+            <CurrencyInput
+              className={inputClass}
+              value={form.extraCondoFee}
+              onChange={(v) => update('extraCondoFee', v)}
+            />
+          </div>
+          <div>
+            <label className={labelClass}>Prazo de cobrança</label>
+            <select
+              className={inputClass}
+              value={form.extraCondoFeeMode}
+              onChange={(e) => update('extraCondoFeeMode', e.target.value as ChargeMode)}
+            >
+              <option value="indefinite">Indefinido (todo mês)</option>
+              <option value="period">Por quantidade de meses</option>
+            </select>
+          </div>
+          {form.extraCondoFeeMode === 'period' && (
+            <>
+              <div>
+                <label className={labelClass}>Meses de cobrança</label>
+                <input
+                  type="number"
+                  min={1}
+                  className={inputClass}
+                  value={form.extraCondoFeeChargeMonths}
+                  onChange={(e) => update('extraCondoFeeChargeMonths', e.target.value)}
+                />
+              </div>
+              <div>
+                <label className={labelClass}>Mês de início</label>
+                <input
+                  type="month"
+                  className={inputClass}
+                  value={form.extraCondoFeeChargeStartMonth}
+                  onChange={(e) => update('extraCondoFeeChargeStartMonth', e.target.value)}
+                />
+              </div>
+            </>
+          )}
+        </div>
+        <p className="mt-2 text-xs text-slate">
+          Ex.: taxa extra aprovada em assembleia (obra, rateio). Entra no boleto como "Taxa extra" enquanto o mês de
+          referência estiver dentro do prazo de cobrança.
+        </p>
       </div>
 
       {error && <p className="text-sm text-rust">{error}</p>}

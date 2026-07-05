@@ -8,14 +8,36 @@ interface Props {
   property: Property | null;
 }
 
+// Só mostramos ao inquilino os rótulos de parcelamento ("parcela 3 de 10").
+// "cobrança por prazo indefinido" é informação interna do cadastro do imóvel
+// e não agrega nada no recibo — a taxa aparece como linha normal recorrente.
+function installmentNote(label?: string | null): string | null {
+  if (!label) return null;
+  return label.includes('parcela') ? label : null;
+}
+
 export function ReceiptImageCard({ invoice, tenant, property }: Props) {
-  const items: { label: string; value: number }[] = [{ label: 'Aluguel', value: invoice.rentAmount }];
-  if (invoice.iptuAmount) items.push({ label: 'IPTU', value: invoice.iptuAmount });
+  const items: { label: string; value: number; note?: string | null }[] = [
+    { label: 'Aluguel', value: invoice.rentAmount },
+  ];
+  if (invoice.iptuAmount)
+    items.push({ label: 'IPTU', value: invoice.iptuAmount, note: installmentNote(invoice.iptuScheduleLabel) });
   if (invoice.insuranceAmount) items.push({ label: 'Seguro', value: invoice.insuranceAmount });
-  if (invoice.extraFeeAmount) items.push({ label: 'Taxa extra', value: invoice.extraFeeAmount });
+  if (invoice.extraFeeAmount)
+    items.push({
+      label: 'Taxa extra',
+      value: invoice.extraFeeAmount,
+      note: installmentNote(invoice.extraFeeScheduleLabel),
+    });
   if (invoice.condoAmount) items.push({ label: 'Condomínio do mês', value: invoice.condoAmount });
-  if (invoice.refundAmount) items.push({ label: 'Reembolso (desconto)', value: -invoice.refundAmount });
-  if (invoice.condoFeeAmount) items.push({ label: 'Taxa condominial (desconto)', value: -invoice.condoFeeAmount });
+  if (invoice.refundAmount)
+    items.push({
+      label: 'Fundo de reserva (desconto)',
+      value: -invoice.refundAmount,
+      note: installmentNote(invoice.refundScheduleLabel),
+    });
+  if (invoice.condoFeeAmount)
+    items.push({ label: 'Taxa condominial (desconto)', value: -invoice.condoFeeAmount });
 
   return (
     <div className="w-[800px] bg-paper p-12 font-sans text-ink">
@@ -46,7 +68,10 @@ export function ReceiptImageCard({ invoice, tenant, property }: Props) {
       <div className="mt-8 border-t border-hairline">
         {items.map((item) => (
           <div key={item.label} className="flex justify-between border-b border-hairline py-3 text-base">
-            <span>{item.label}</span>
+            <span>
+              {item.label}
+              {item.note && <span className="ml-2 font-mono text-[11px] text-slate">({item.note})</span>}
+            </span>
             <span className="font-mono">{formatCurrency(item.value)}</span>
           </div>
         ))}

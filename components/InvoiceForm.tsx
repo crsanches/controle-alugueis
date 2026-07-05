@@ -8,6 +8,13 @@ import type { Contract, Invoice, Property } from '@/lib/types';
 import { formatCurrency, monthInputToTimestamp, timestampToMonthInput, timestampToDateInput, dateInputToTimestamp } from '@/lib/format';
 import { inputClass, labelClass, primaryButtonClass, secondaryButtonClass, dangerLinkClass } from '@/lib/formStyles';
 import { CurrencyInput } from '@/components/CurrencyInput';
+import {
+  scheduledChargeForMonth,
+  describeScheduleForMonth,
+  iptuSchedule,
+  refundFeeSchedule,
+  extraCondoFeeSchedule,
+} from '@/lib/chargeSchedule';
 
 /**
  * Valor do aluguel vigente no mês de referência (YYYY-MM), percorrendo o
@@ -100,6 +107,23 @@ export function InvoiceForm({ invoice }: { invoice?: Invoice }) {
     return activeOnes;
   }, [contracts, isEditing, invoice]);
 
+  // Contrato e imóvel selecionados no momento — usados para confrontar o mês
+  // de referência do boleto com os períodos de cobrança do imóvel.
+  const selectedContract = useMemo(
+    () => contracts.find((c) => c.id === form.contractId),
+    [contracts, form.contractId]
+  );
+  const selectedProperty = useMemo(
+    () => properties.find((p) => p.id === selectedContract?.propertyId),
+    [properties, selectedContract]
+  );
+
+  // Rótulos informativos ("parcela 3 de 10", "fora do período...") exibidos
+  // sob os campos e reaproveitáveis no aviso ao inquilino.
+  const iptuScheduleLabel = describeScheduleForMonth(iptuSchedule(selectedProperty), form.referenceMonth);
+  const refundScheduleLabel = describeScheduleForMonth(refundFeeSchedule(selectedProperty), form.referenceMonth);
+  const extraScheduleLabel = describeScheduleForMonth(extraCondoFeeSchedule(selectedProperty), form.referenceMonth);
+
   function update<K extends keyof typeof form>(key: K, value: (typeof form)[K]) {
     setForm((f) => ({ ...f, [key]: value }));
   }
@@ -120,17 +144,29 @@ export function InvoiceForm({ invoice }: { invoice?: Invoice }) {
       // valor vigente no mês de referência do boleto (se já preenchido);
       // boleto retroativo nasce com o valor da época, não o de hoje
       rentAmount: String(rentForReferenceMonth(contract, f.referenceMonth)),
-      iptuAmount: contract.collectsIptu ? String(property?.monthlyIptu ?? 0) : '0',
+      // IPTU só entra se o mês de referência estiver dentro do período de
+      // cobrança do imóvel (ex.: 10 parcelas a partir do mês de início)
+      iptuAmount: contract.collectsIptu
+        ? String(scheduledChargeForMonth(property?.monthlyIptu ?? 0, iptuSchedule(property), f.referenceMonth))
+        : '0',
       insuranceAmount: String(property?.monthlyInsurance ?? 0),
       condoFeeAmount: String(property?.condoFee ?? 0),
-      refundAmount: String(property?.refundFee ?? 0),
+      // Fundo de reserva: indefinido ou por N meses, conforme o cadastro
+      refundAmount: String(
+        scheduledChargeForMonth(property?.refundFee ?? 0, refundFeeSchedule(property), f.referenceMonth)
+      ),
+      // Outras taxas extras do condomínio → campo "Taxa extra" do boleto
+      extraFeeAmount: String(
+        scheduledChargeForMonth(property?.extraCondoFee ?? 0, extraCondoFeeSchedule(property), f.referenceMonth)
+      ),
       // condoAmount (condomínio do mês) não é preenchido automaticamente —
       // varia todo mês, então precisa ser digitado a cada boleto.
     }));
   }
 
-  // Num boleto novo, mudar o mês de referência re-sincroniza o aluguel com
-  // o valor vigente naquele mês. Ao editar, o valor não é mexido — quem
+  // Num boleto novo, mudar o mês de referência re-sincroniza o aluguel e as
+  // taxas com período (IPTU, fundo de reserva, taxa extra) com o valor
+  // vigente naquele mês. Ao editar, os valores não são mexidos — quem
   // manda é o refresh do loadOptions (pendente) ou o valor gravado (pago).
   function handleReferenceMonthChange(referenceMonth: string) {
     if (isEditing) {
@@ -138,10 +174,24 @@ export function InvoiceForm({ invoice }: { invoice?: Invoice }) {
       return;
     }
     const contract = contracts.find((c) => c.id === form.contractId);
+    const property = contract ? properties.find((p) => p.id === contract.propertyId) : undefined;
     setForm((f) => ({
       ...f,
       referenceMonth,
       rentAmount: contract ? String(rentForReferenceMonth(contract, referenceMonth)) : f.rentAmount,
+      ...(contract
+        ? {
+            iptuAmount: contract.collectsIptu
+              ? String(scheduledChargeForMonth(property?.monthlyIptu ?? 0, iptuSchedule(property), referenceMonth))
+              : '0',
+            refundAmount: String(
+              scheduledChargeForMonth(property?.refundFee ?? 0, refundFeeSchedule(property), referenceMonth)
+            ),
+            extraFeeAmount: String(
+              scheduledChargeForMonth(property?.extraCondoFee ?? 0, extraCondoFeeSchedule(property), referenceMonth)
+            ),
+          }
+        : {}),
     }));
   }
 
@@ -207,6 +257,12 @@ export function InvoiceForm({ invoice }: { invoice?: Invoice }) {
         refundAmount: parseFloat(form.refundAmount) || 0,
         condoFeeAmount: parseFloat(form.condoFeeAmount) || 0,
         totalAmount,
+        // Rótulos dos períodos de cobrança no mês do boleto (ex.: "parcela
+        // 3 de 10"). Gravados no boleto para o recibo em PDF e o aviso por
+        // WhatsApp exibirem ao inquilino sem precisar reconsultar o imóvel.
+        iptuScheduleLabel: (parseFloat(form.iptuAmount) || 0) > 0 ? iptuScheduleLabel : null,
+        refundScheduleLabel: (parseFloat(form.refundAmount) || 0) > 0 ? refundScheduleLabel : null,
+        extraFeeScheduleLabel: (parseFloat(form.extraFeeAmount) || 0) > 0 ? extraScheduleLabel : null,
         status: form.status,
         paidDate: form.status === 'paid' ? dateInputToTimestamp(form.paidDate) : null,
         notes: form.notes,
@@ -265,7 +321,8 @@ export function InvoiceForm({ invoice }: { invoice?: Invoice }) {
         </select>
         {!isEditing && (
           <p className="mt-1 text-xs text-slate">
-            Os valores abaixo são pré-preenchidos a partir do contrato e do imóvel — ajuste se necessário.
+            Os valores abaixo são pré-preenchidos a partir do contrato e do imóvel — IPTU, fundo de reserva e taxa
+            extra respeitam o período de cobrança cadastrado no imóvel para o mês de referência.
           </p>
         )}
         {isEditing && invoice?.status !== 'paid' && (
@@ -312,10 +369,12 @@ export function InvoiceForm({ invoice }: { invoice?: Invoice }) {
         <div>
           <label className={labelClass}>IPTU</label>
           <CurrencyInput className={inputClass} value={form.iptuAmount} onChange={(v) => update('iptuAmount', v)} />
+          {iptuScheduleLabel && <p className="mt-1 text-xs text-slate">{iptuScheduleLabel}</p>}
         </div>
         <div>
           <label className={labelClass}>Taxa extra</label>
           <CurrencyInput className={inputClass} value={form.extraFeeAmount} onChange={(v) => update('extraFeeAmount', v)} />
+          {extraScheduleLabel && <p className="mt-1 text-xs text-slate">{extraScheduleLabel}</p>}
         </div>
         <div>
           <label className={labelClass}>Seguro</label>
@@ -327,8 +386,9 @@ export function InvoiceForm({ invoice }: { invoice?: Invoice }) {
           <p className="mt-1 text-xs text-slate">Varia todo mês — digite o valor do boleto do condomínio atual.</p>
         </div>
         <div>
-          <label className={labelClass}>Reembolso (desconto)</label>
+          <label className={labelClass}>Reembolso / fundo de reserva (desconto)</label>
           <CurrencyInput className={inputClass} value={form.refundAmount} onChange={(v) => update('refundAmount', v)} />
+          {refundScheduleLabel && <p className="mt-1 text-xs text-slate">{refundScheduleLabel}</p>}
         </div>
         <div>
           <label className={labelClass}>Taxa condominial do imóvel (desconto)</label>

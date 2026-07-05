@@ -51,6 +51,9 @@ export interface Invoice {
   whatsappSentAt: Timestamp | null;
   paidDate: Timestamp | null;
   legacyId?: number;
+  iptuScheduleLabel?: string | null, 
+  refundScheduleLabel?: string | null, 
+  extraFeeScheduleLabel?: string | null
 }
 
 export interface Tenant {
@@ -74,6 +77,13 @@ export interface Property {
   monthlyInsurance: number;
   refundFee: number;
   condoFee: number;
+  iptuChargeMonths?: number | null, 
+  iptuChargeStartMonth?: string | null, 
+  refundFeeChargeMonths?: number | null, 
+  refundFeeChargeStartMonth?: string | null, 
+  extraCondoFee?: number, 
+  extraCondoFeeChargeMonths?: number | null, 
+  extraCondoFeeChargeStartMonth?: string | null
 }
 
 export interface Payment {

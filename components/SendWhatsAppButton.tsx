@@ -31,6 +31,32 @@ function supportsFileShare(): boolean {
   }
 }
 
+// Mesmo critério do recibo: só o rótulo de parcelamento ("parcela 3 de 10")
+// interessa ao inquilino; "cobrança por prazo indefinido" é dado interno.
+function installmentNote(label?: string | null): string | null {
+  if (!label) return null;
+  return label.includes('parcela') ? label : null;
+}
+
+// Linhas extras da mensagem para taxas parceladas — o inquilino vê no texto
+// quantas parcelas faltam, sem precisar abrir a imagem do recibo.
+function buildScheduleLines(invoice: Invoice): string[] {
+  const lines: string[] = [];
+  const iptuNote = installmentNote(invoice.iptuScheduleLabel);
+  if (invoice.iptuAmount && iptuNote) {
+    lines.push(`IPTU: ${formatCurrency(invoice.iptuAmount)} (${iptuNote})`);
+  }
+  const extraNote = installmentNote(invoice.extraFeeScheduleLabel);
+  if (invoice.extraFeeAmount && extraNote) {
+    lines.push(`Taxa extra: ${formatCurrency(invoice.extraFeeAmount)} (${extraNote})`);
+  }
+  const refundNote = installmentNote(invoice.refundScheduleLabel);
+  if (invoice.refundAmount && refundNote) {
+    lines.push(`Fundo de reserva (desconto): ${formatCurrency(invoice.refundAmount)} (${refundNote})`);
+  }
+  return lines;
+}
+
 export function SendWhatsAppButton({ invoice, compact = false }: { invoice: Invoice; compact?: boolean }) {
   const [status, setStatus] = useState<Status>('idle');
   const [captureData, setCaptureData] = useState<{ tenant: Tenant | null; property: Property | null } | null>(null);
@@ -76,6 +102,8 @@ export function SendWhatsAppButton({ invoice, compact = false }: { invoice: Invo
       const message = [
         `Olá ${invoice.tenantName.split(' ')[0]}, segue o recibo referente a ${formatMonth(invoice.referenceMonth)}.`,
         `Valor: ${formatCurrency(invoice.totalAmount)}`,
+        // taxas parceladas (IPTU, taxa extra, fundo de reserva), quando houver
+        ...buildScheduleLines(invoice),
         `Vencimento: ${formatDate(invoice.dueDate)}`,
       ].join('\n');
       const waUrl = phone
