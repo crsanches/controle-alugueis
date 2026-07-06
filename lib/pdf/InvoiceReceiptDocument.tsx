@@ -26,6 +26,7 @@ const styles = StyleSheet.create({
     paddingVertical: 7,
   },
   rowLabel: { fontSize: 10 },
+  rowNote: { fontSize: 8, color: '#5B6B63' },
   rowValue: { fontSize: 10 },
   totalRow: {
     flexDirection: 'row',
@@ -54,6 +55,20 @@ function monthStr(ts: Timestamp | null) {
   return ts.toDate().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric', timeZone: 'UTC' });
 }
 
+// Mesmo critério do recibo por imagem (ReceiptImageCard): só o rótulo de
+// parcelamento ("parcela 3 de 10") interessa ao inquilino; "cobrança por
+// prazo indefinido" é dado interno do cadastro do imóvel e não é exibido.
+function installmentNote(label?: string | null): string | null {
+  if (!label) return null;
+  return label.includes('parcela') ? label : null;
+}
+
+interface ReceiptItem {
+  label: string;
+  value: number;
+  note?: string | null;
+}
+
 interface Props {
   invoice: Invoice;
   tenant: Tenant | null;
@@ -61,12 +76,23 @@ interface Props {
 }
 
 export function InvoiceReceiptDocument({ invoice, tenant, property }: Props) {
-  const items: { label: string; value: number }[] = [{ label: 'Aluguel', value: invoice.rentAmount }];
-  if (invoice.iptuAmount) items.push({ label: 'IPTU', value: invoice.iptuAmount });
+  const items: ReceiptItem[] = [{ label: 'Aluguel', value: invoice.rentAmount }];
+  if (invoice.iptuAmount)
+    items.push({ label: 'IPTU', value: invoice.iptuAmount, note: installmentNote(invoice.iptuScheduleLabel) });
   if (invoice.insuranceAmount) items.push({ label: 'Seguro', value: invoice.insuranceAmount });
-  if (invoice.extraFeeAmount) items.push({ label: 'Taxa extra', value: invoice.extraFeeAmount });
+  if (invoice.extraFeeAmount)
+    items.push({
+      label: 'Taxa extra',
+      value: invoice.extraFeeAmount,
+      note: installmentNote(invoice.extraFeeScheduleLabel),
+    });
   if (invoice.condoAmount) items.push({ label: 'Condomínio do mês', value: invoice.condoAmount });
-  if (invoice.refundAmount) items.push({ label: 'Reembolso (desconto)', value: -invoice.refundAmount });
+  if (invoice.refundAmount)
+    items.push({
+      label: 'Fundo de reserva (desconto)',
+      value: -invoice.refundAmount,
+      note: installmentNote(invoice.refundScheduleLabel),
+    });
   if (invoice.condoFeeAmount) items.push({ label: 'Taxa condominial (desconto)', value: -invoice.condoFeeAmount });
 
   return (
@@ -101,7 +127,10 @@ export function InvoiceReceiptDocument({ invoice, tenant, property }: Props) {
         <View style={styles.section}>
           {items.map((item) => (
             <View key={item.label} style={styles.row}>
-              <Text style={styles.rowLabel}>{item.label}</Text>
+              <Text style={styles.rowLabel}>
+                {item.label}
+                {item.note ? <Text style={styles.rowNote}>  ({item.note})</Text> : null}
+              </Text>
               <Text style={styles.rowValue}>{money(item.value)}</Text>
             </View>
           ))}
