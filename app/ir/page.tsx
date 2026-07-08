@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { collection, getDocs } from 'firebase/firestore';
 import { Timestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import type { Contract, Invoice, Property } from '@/lib/types';
+import type { Contract, Invoice } from '@/lib/types';
 import { formatCurrency } from '@/lib/format';
 
 interface Row {
@@ -17,6 +17,7 @@ interface Row {
   collectionDate: Date | null;
   rentValue: number;
   refundFee: number;
+  extraFeeDeduction: number; // taxa extra devida pelo proprietário (gravada no boleto)
   base: number;
 }
 
@@ -67,17 +68,15 @@ export default function IRPage() {
   useEffect(() => {
     async function load() {
       try {
-        const [contractsSnap, propertiesSnap, invoicesSnap] = await Promise.all([
+        // A coleção de imóveis não é mais consultada aqui: todas as deduções
+        // vêm do próprio boleto (menos leituras no Firestore).
+        const [contractsSnap, invoicesSnap] = await Promise.all([
           getDocs(collection(db, 'contracts')),
-          getDocs(collection(db, 'properties')),
           getDocs(collection(db, 'invoices')),
         ]);
 
         const contractsById = new Map<string, Contract>();
         contractsSnap.docs.forEach((d) => contractsById.set(d.id, { id: d.id, ...d.data() } as Contract));
-
-        const propertiesById = new Map<string, Property>();
-        propertiesSnap.docs.forEach((d) => propertiesById.set(d.id, { id: d.id, ...d.data() } as Property));
 
         const invoices = invoicesSnap.docs.map((d) => ({ id: d.id, ...d.data() }) as Invoice);
 
@@ -90,12 +89,15 @@ export default function IRPage() {
             const contract = contractsById.get(inv.contractId);
             if (!contract || !contract.collectsIncomeTax) return null;
 
-            const property = propertiesById.get(contract.propertyId);
-            // Usa o valor ATUAL do aluguel (currentRentAmount), não o valor
-            // original/congelado (rentAmount) — mesmo campo problemático que
-            // já identificamos nos boletos migrados do sistema antigo.
+            // Valores sempre do PRÓPRIO boleto (histórico congelado no
+            // pagamento), nunca do cadastro atual do imóvel — alterar o
+            // cadastro no futuro não pode reescrever meses já declarados.
             const rentValue = inv.currentRentAmount || inv.rentAmount || 0;
-            const refundFee = property?.refundFee || 0;
+            const refundFee = inv.refundAmount || 0;
+            // Taxa extra do condomínio devida pelo proprietário: deduzida da
+            // base. Só entra quando o boleto foi gravado com o flag de
+            // desconto; taxa extra do inquilino não afeta a base.
+            const extraFeeDeduction = inv.extraFeeIsDiscount ? inv.extraFeeAmount || 0 : 0;
 
             const row: Row = {
               invoiceId: inv.id,
@@ -107,7 +109,8 @@ export default function IRPage() {
               collectionDate: computeCollectionDate(inv.referenceMonth),
               rentValue,
               refundFee,
-              base: rentValue - refundFee,
+              extraFeeDeduction,
+              base: rentValue - refundFee - extraFeeDeduction,
             };
             return row;
           })
@@ -138,9 +141,10 @@ export default function IRPage() {
       {!loading && !error && (
         <>
           <p className="mb-4 text-xs text-slate">
-            Base de cálculo = valor do aluguel do boleto pago, deduzida a taxa de reembolso do imóvel. Mês do
-            recebimento = mês de referência + 1 mês. Mês para recolhimento = mês de referência + 2 meses, sempre dia
-            30 (dia 28 em fevereiro).
+            Base de cálculo = valor do aluguel do boleto pago, deduzidos o fundo de reserva e as taxas extras de
+            condomínio de responsabilidade do proprietário, conforme gravados no próprio boleto. Mês do recebimento
+            = mês de referência + 1 mês. Mês para recolhimento = mês de referência + 2 meses, sempre dia 30 (dia 28
+            em fevereiro).
           </p>
 
           <div className="table-scroll">
@@ -170,7 +174,7 @@ export default function IRPage() {
                         : '—'}
                     </td>
                     <td className="money">{formatCurrency(r.rentValue)}</td>
-                    <td className="money">{formatCurrency(r.refundFee)}</td>
+                    <td className="money">{formatCurrency(r.refundFee + r.extraFeeDeduction)}</td>
                     <td className="money">{formatCurrency(r.base)}</td>
                   </tr>
                 ))}

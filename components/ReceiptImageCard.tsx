@@ -25,8 +25,8 @@ export function ReceiptImageCard({ invoice, tenant, property }: Props) {
   if (invoice.insuranceAmount) items.push({ label: 'Seguro', value: invoice.insuranceAmount });
   if (invoice.extraFeeAmount)
     items.push({
-      label: 'Taxa extra',
-      value: invoice.extraFeeAmount,
+      label: invoice.extraFeeIsDiscount ? 'Taxa extra condomínio (desconto)' : 'Taxa extra',
+      value: invoice.extraFeeIsDiscount ? -invoice.extraFeeAmount : invoice.extraFeeAmount,
       note: installmentNote(invoice.extraFeeScheduleLabel),
     });
   if (invoice.condoAmount) items.push({ label: 'Condomínio do mês', value: invoice.condoAmount });

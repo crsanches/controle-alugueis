@@ -48,7 +48,8 @@ function buildScheduleLines(invoice: Invoice): string[] {
   }
   const extraNote = installmentNote(invoice.extraFeeScheduleLabel);
   if (invoice.extraFeeAmount && extraNote) {
-    lines.push(`Taxa extra: ${formatCurrency(invoice.extraFeeAmount)} (${extraNote})`);
+    const extraLabel = invoice.extraFeeIsDiscount ? 'Taxa extra condomínio (desconto)' : 'Taxa extra';
+    lines.push(`${extraLabel}: ${formatCurrency(invoice.extraFeeAmount)} (${extraNote})`);
   }
   const refundNote = installmentNote(invoice.refundScheduleLabel);
   if (invoice.refundAmount && refundNote) {

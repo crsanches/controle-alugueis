@@ -53,8 +53,11 @@ export interface Invoice {
   legacyId?: number;
   iptuScheduleLabel?: string | null, 
   refundScheduleLabel?: string | null, 
-  extraFeeScheduleLabel?: string | null
+  extraFeeScheduleLabel?: string | null;
+  extraFeeIsDiscount?: boolean; // true = taxa devida pelo proprietário, deduz do total
 }
+
+
 
 export interface Tenant {
   id: string;
@@ -83,7 +86,8 @@ export interface Property {
   refundFeeChargeStartMonth?: string | null, 
   extraCondoFee?: number, 
   extraCondoFeeChargeMonths?: number | null, 
-  extraCondoFeeChargeStartMonth?: string | null
+  extraCondoFeeChargeStartMonth?: string | null,
+  extraCondoFeeResponsibility?: 'owner' | 'tenant' | null; // null/ausente = 'tenant' (legado)
 }
 
 export interface Payment {

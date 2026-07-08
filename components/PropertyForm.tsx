@@ -24,6 +24,8 @@ export function PropertyForm({ property }: { property?: Property }) {
     monthlyIptu: String(property?.monthlyIptu ?? 0),
     monthlyInsurance: String(property?.monthlyInsurance ?? 0),
     condoFee: String(property?.condoFee ?? 0),
+    
+
 
     // ── IPTU: quantidade de meses + mês de início da cobrança ──────────────
     // O IPTU normalmente é parcelado em 10 meses por ano.
@@ -41,6 +43,7 @@ export function PropertyForm({ property }: { property?: Property }) {
     extraCondoFeeMode: (property?.extraCondoFeeChargeMonths != null ? 'period' : 'indefinite') as ChargeMode,
     extraCondoFeeChargeMonths: String(property?.extraCondoFeeChargeMonths ?? 12),
     extraCondoFeeChargeStartMonth: property?.extraCondoFeeChargeStartMonth ?? '',
+    extraCondoFeeResponsibility: (property?.extraCondoFeeResponsibility ?? 'tenant') as 'owner' | 'tenant',
   });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -82,6 +85,7 @@ export function PropertyForm({ property }: { property?: Property }) {
           form.extraCondoFeeMode === 'period' ? parseInt(form.extraCondoFeeChargeMonths, 10) || null : null,
         extraCondoFeeChargeStartMonth:
           form.extraCondoFeeMode === 'period' ? form.extraCondoFeeChargeStartMonth || null : null,
+        extraCondoFeeResponsibility: form.extraCondoFeeResponsibility,
       };
 
       if (isEditing && property) {
@@ -268,6 +272,19 @@ export function PropertyForm({ property }: { property?: Property }) {
               <option value="period">Por quantidade de meses</option>
             </select>
           </div>
+
+          <div>
+            <label className={labelClass}>Responsabilidade</label>
+            <select
+              className={inputClass}
+              value={form.extraCondoFeeResponsibility}
+              onChange={(e) => update('extraCondoFeeResponsibility', e.target.value as 'owner' | 'tenant')}
+            >
+              <option value="tenant">Inquilino (soma no boleto)</option>
+              <option value="owner">Proprietário (desconta do boleto)</option>
+            </select>
+          </div>
+
           {form.extraCondoFeeMode === 'period' && (
             <>
               <div>
@@ -294,7 +311,8 @@ export function PropertyForm({ property }: { property?: Property }) {
         </div>
         <p className="mt-2 text-xs text-slate">
           Ex.: taxa extra aprovada em assembleia (obra, rateio). Entra no boleto como "Taxa extra" enquanto o mês de
-          referência estiver dentro do prazo de cobrança.
+          referência estiver dentro do prazo de cobrança. Se a responsabilidade for do proprietário, o valor é
+          deduzido do total do boleto (aparece como desconto para o inquilino).
         </p>
       </div>
 

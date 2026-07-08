@@ -57,6 +57,7 @@ export function InvoiceForm({ invoice }: { invoice?: Invoice }) {
     rentAmount: String(invoice?.currentRentAmount || invoice?.rentAmount || 0),
     iptuAmount: String(invoice?.iptuAmount ?? 0),
     extraFeeAmount: String(invoice?.extraFeeAmount ?? 0),
+    extraFeeIsDiscount: invoice?.extraFeeIsDiscount ?? false,
     insuranceAmount: String(invoice?.insuranceAmount ?? 0),
     condoAmount: String(invoice?.condoAmount ?? 0),
     refundAmount: String(invoice?.refundAmount ?? 0),
@@ -88,7 +89,13 @@ export function InvoiceForm({ invoice }: { invoice?: Invoice }) {
         const contract = loadedContracts.find((c) => c.id === invoice.contractId);
         if (contract) {
           const refMonth = timestampToMonthInput(invoice.referenceMonth);
-          setForm((f) => ({ ...f, rentAmount: String(rentForReferenceMonth(contract, refMonth)) }));
+          const property = propertiesSnap.docs
+            .map((d) => ({ id: d.id, ...d.data() }) as Property)
+            .find((p) => p.id === contract.propertyId);
+          setForm((f) => ({ ...f, rentAmount: String(rentForReferenceMonth(contract, refMonth)),
+            extraFeeIsDiscount: property?.extraCondoFeeResponsibility === 'owner',
+          }));
+          
         }
       }
     }
@@ -159,6 +166,7 @@ export function InvoiceForm({ invoice }: { invoice?: Invoice }) {
       extraFeeAmount: String(
         scheduledChargeForMonth(property?.extraCondoFee ?? 0, extraCondoFeeSchedule(property), f.referenceMonth)
       ),
+      extraFeeIsDiscount: property?.extraCondoFeeResponsibility === 'owner',
       // condoAmount (condomínio do mês) não é preenchido automaticamente —
       // varia todo mês, então precisa ser digitado a cada boleto.
     }));
@@ -197,10 +205,11 @@ export function InvoiceForm({ invoice }: { invoice?: Invoice }) {
 
   const totalAmount = useMemo(() => {
     const n = (v: string) => parseFloat(v) || 0;
+    const extraFee = n(form.extraFeeAmount);
     return (
       n(form.rentAmount) +
       n(form.iptuAmount) +
-      n(form.extraFeeAmount) +
+      (form.extraFeeIsDiscount ? -extraFee : extraFee) +
       n(form.insuranceAmount) +
       n(form.condoAmount) -
       n(form.refundAmount) -
@@ -252,6 +261,7 @@ export function InvoiceForm({ invoice }: { invoice?: Invoice }) {
             : rentForReferenceMonth(contract, form.referenceMonth),
         iptuAmount: parseFloat(form.iptuAmount) || 0,
         extraFeeAmount: parseFloat(form.extraFeeAmount) || 0,
+        extraFeeIsDiscount: form.extraFeeIsDiscount,
         insuranceAmount: parseFloat(form.insuranceAmount) || 0,
         condoAmount: parseFloat(form.condoAmount) || 0,
         refundAmount: parseFloat(form.refundAmount) || 0,
@@ -371,11 +381,16 @@ export function InvoiceForm({ invoice }: { invoice?: Invoice }) {
           <CurrencyInput className={inputClass} value={form.iptuAmount} onChange={(v) => update('iptuAmount', v)} />
           {iptuScheduleLabel && <p className="mt-1 text-xs text-slate">{iptuScheduleLabel}</p>}
         </div>
-        <div>
-          <label className={labelClass}>Taxa extra</label>
-          <CurrencyInput className={inputClass} value={form.extraFeeAmount} onChange={(v) => update('extraFeeAmount', v)} />
-          {extraScheduleLabel && <p className="mt-1 text-xs text-slate">{extraScheduleLabel}</p>}
-        </div>
+                          <div>
+                            <label className={labelClass}>
+                              Taxa extra{form.extraFeeIsDiscount ? ' (desconto — proprietário)' : ''}
+                            </label>
+                            <CurrencyInput className={inputClass} value={form.extraFeeAmount} onChange={(v) => update('extraFeeAmount', v)} />
+                            {extraScheduleLabel && <p className="mt-1 text-xs text-slate">{extraScheduleLabel}</p>}
+                            {form.extraFeeIsDiscount && (
+                              <p className="mt-1 text-xs text-slate">Taxa devida pelo proprietário — será deduzida do total.</p>
+                            )}
+                          </div>
         <div>
           <label className={labelClass}>Seguro</label>
           <CurrencyInput className={inputClass} value={form.insuranceAmount} onChange={(v) => update('insuranceAmount', v)} />
